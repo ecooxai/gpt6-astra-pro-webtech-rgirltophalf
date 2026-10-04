@@ -5,3 +5,5 @@ reference/
 build/
 *.zip
 *.glb
+
+.pages/

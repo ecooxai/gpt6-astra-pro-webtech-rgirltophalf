@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "meshes": 27,
+  "vertices": 468673,
+  "triangles": 649209,
+  "bounds": {
+    "min": [
+      -1.3549710296565214,
+      -0.460999995470047,
+      -0.7453780152376109
+    ],
+    "max": [
+      1.231679654121399,
+      3.6452983242961783,
+      0.66269712658082
+    ]
+  },
+  "checks": [
+    "finite attributes",
+    "matching attribute counts",
+    "valid triangle indices",
+    "plausible bounding volume",
+    "material controls"
+  ]
+}

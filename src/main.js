@@ -25,13 +25,13 @@ async function init(){
   scene=new THREE.Scene();camera=new THREE.PerspectiveCamera(32,1,.1,50);
   controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.10;controls.enablePan=false;controls.minDistance=2.2;controls.maxDistance=13;controls.minPolarAngle=.25;controls.maxPolarAngle=2.72;controls.autoRotateSpeed=.48;controls.addEventListener('change',invalidate);
   // Procedural studio lighting: no HDRI/environment/image assets.
-  scene.add(new THREE.HemisphereLight('#fff2e6','#665a65',1.42));
-  scene.add(new THREE.AmbientLight('#f6d9c9',.27));
+  scene.add(new THREE.HemisphereLight('#fff2e6','#665a65',.80));
+  scene.add(new THREE.AmbientLight('#f6d9c9',.10));
   RectAreaLightUniformsLib.init();
   function area(color,intensity,x,y,z,w,h,tx=0,ty=2,tz=0){const l=new THREE.RectAreaLight(color,intensity,w,h);l.position.set(x,y,z);l.lookAt(tx,ty,tz);scene.add(l);return l;}
-  area('#fff0e5',4.1,-3.5,4.6,4,3.4,5);
-  area('#e3e9ff',1.8,3.5,3.1,2.5,3,4);
-  area('#f0d5c3',4.4,1.5,4.2,-2.2,2.2,3.5);
+  area('#fff3ec',3.15,-3.5,4.6,4,3.4,5);
+  area('#e3e9ff',1.05,3.5,3.1,2.5,3,4);
+  area('#f0d5c3',3.2,1.5,4.2,-2.2,2.2,3.5);
   const key=new THREE.DirectionalLight('#fff0e5',1.25);key.position.set(-3,4.9,4.7);key.castShadow=true;key.shadow.mapSize.set(mobile?1024:2048,mobile?1024:2048);Object.assign(key.shadow.camera,{left:-3,right:3,top:4,bottom:-2,near:.5,far:15});key.shadow.bias=-.00012;key.shadow.normalBias=.007;key.shadow.radius=3;key.target.position.set(0,2,0);scene.add(key,key.target);
   portrait=buildPortrait({mobile});scene.add(portrait.root);
   new ResizeObserver(()=>{const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();invalidate();}).observe(host);

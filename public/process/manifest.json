@@ -1,9 +1,30 @@
 {
-  "revision": "2026-10-04T11:30:33.105456+00:00",
-  "score": 64,
-  "iterations": 5,
-  "note": "Review 5: 64/100. Corrected iris occlusion, widened neck and shoulders, and softened garment folds. Hair remains too sculpted and skin too uniform. Scores are manual visual judgments, not measured similarity.",
+  "revision": "2026-10-04T11:55:58.986132+00:00",
+  "score": 68,
+  "iterations": 8,
+  "note": "Review 8: 68/100. Softer facial transitions and asymmetric fringe. Photorealistic skin and hair still need substantial refinement. Scores are manual visual judgments, not measured similarity.",
   "reviews": [
+    {
+      "title": "08 \u00b7 Soft tissue and fringe",
+      "score": 68,
+      "image": "process/iteration-08-portrait.png",
+      "note": "Softer facial transitions and asymmetric fringe. Photorealistic skin and hair still need substantial refinement.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-08-portrait.png"
+    },
+    {
+      "title": "07 \u00b7 Spherical eyes and sockets",
+      "score": 67,
+      "image": "process/iteration-07-portrait.png",
+      "note": "Rebuilt the eye surfaces and facial openings; close-up review identified stiff lid edges, high brows, and repetitive fringe.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-07-portrait.png"
+    },
+    {
+      "title": "06 \u00b7 Hair shading and ear visibility",
+      "score": 66,
+      "image": "process/iteration-06-portrait.png",
+      "note": "Added procedural strand microdetail, directional lighting, and a left-ear hair tuck. The face still reads as stylized rather than photorealistic.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-06-portrait.png"
+    },
     {
       "title": "05 \u00b7 Eye depth and proportions",
       "score": 64,
