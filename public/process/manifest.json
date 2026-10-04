@@ -1,9 +1,30 @@
 {
-  "revision": "2026-10-04T18:57:04.265071+00:00",
+  "revision": "2026-10-04T20:15:02.190945+00:00",
   "score": 77,
-  "iterations": 20,
-  "note": "Review 20: 77/100. Rebuilt eyebrow growth, stabilized the orbital transition, refined the nose and lip proportions, and restored a neutral hair color. Geometry checks pass. The eyelid margins, uniform groom and cloth shading still prevent a high-fidelity likeness score. Scores are manual visual judgments, not measured similarity.",
+  "iterations": 23,
+  "note": "Review 23: 77/100. Reviewed portrait, left and back. Facial placement improved, but root gaps, a rear seam, overly uniform hair and flat skin remain. This is not the target quality. Scores are manual visual judgments, not measured similarity.",
   "reviews": [
+    {
+      "title": "23 \u00b7 Recovered continuation: crown gaps remain",
+      "score": 77,
+      "image": "process/iteration-23-portrait.png",
+      "note": "Reviewed portrait, left and back. Facial placement improved, but root gaps, a rear seam, overly uniform hair and flat skin remain. This is not the target quality.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-23-portrait.png"
+    },
+    {
+      "title": "22 \u00b7 Volumetric highlights \u2014 root-strip regression",
+      "score": 77,
+      "image": "process/iteration-22-portrait.png",
+      "note": "Added view-responsive fiber highlights and varied volumetric locks. The reflection test exposes triangular root-strip artifacts and an overly bright part line, so this pass is not accepted as final.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-22-portrait.png"
+    },
+    {
+      "title": "21 \u00b7 Dimensional eyelids and embedded eyes",
+      "score": 78,
+      "image": "process/iteration-21-portrait.png",
+      "note": "Added rounded skin margins, contact-shaded ocular surfaces and varied tapered eyelashes. The eyes sit more convincingly in the face; the upper lashes are too reflective, and the crown remains too uniformly combed.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-21-portrait.png"
+    },
     {
       "title": "20 \u00b7 Smoother anatomy and neutral dark-brown fibers",
       "score": 77,

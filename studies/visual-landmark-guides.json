@@ -1,0 +1,14 @@
+{
+  "method": "Hand-entered visual estimates from the supplied reference. These are approximate artistic guides, not measurements extracted from image pixels.",
+  "referenceDimensions": [1024,1536],
+  "evaluationViewport": [720,1080],
+  "uncertaintyPixelsAtEvaluationSize": 3.5,
+  "landmarks": {
+    "leftPupil": [450,430],
+    "rightPupil": [630,466],
+    "noseTip": [533,580],
+    "mouthSeam": [508,654],
+    "chin": [500,755]
+  },
+  "scope": "Head pose and coarse facial placement only. The fit does not grade photorealism, hair, cloth, expression, or complete visual likeness."
+}

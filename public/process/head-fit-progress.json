@@ -1,0 +1,10 @@
+{
+  "status": "completed",
+  "completed": 20000,
+  "total": 20000,
+  "uniqueMeshes": 20000,
+  "invalidMeshes": 0,
+  "bestLandmarkRmsePx": 2.947373921238575,
+  "elapsedMs": 36435,
+  "scope": "coarse head-build and landmark-fit tests; not full-scene visual reviews"
+}

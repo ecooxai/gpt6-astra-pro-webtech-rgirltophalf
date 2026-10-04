@@ -4,12 +4,15 @@
  * No reference pixels, stock meshes, character packages or generated images are used.
  */
 import * as THREE from 'three';
+import fit from './portrait-fit.json' with {type:'json'};
+import {createFaceDefinition} from './facial-definition.js';
 import { buildGroom } from './groom-flow.js';
 import { buildBlouse } from './garment.js';
 import { buildEar } from './ear.js';
 import { buildIrisTexture } from './iris.js';
 import { buildSkinAtlas } from './skin-atlas.js';
 import { buildBrows } from './brows.js';
+import { buildEyes } from './eyes.js';
 import { buildContinuousFace, eyeEdge, eyeSurface, eyeY, eyeX, eyeW } from './face-surface.js';
 import { skinMicrostructure, hairSurfaceMaps, hairlineMask, scleraPigment } from './surfaces.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
@@ -29,23 +32,15 @@ function noiseTexture(size=256){const data=new Uint8Array(size*size*4);for(let i
 function strandTexture(){const size=512,data=new Uint8Array(size*size*4);for(let y=0;y<size;y++)for(let x=0;x<size;x++){const u=x/size,v=y/size,w=.50+.20*Math.sin(u*940+.6*Math.sin(v*16+u*5))+.14*Math.sin(u*2104-.3*Math.cos(v*39))+.04*(rnd()-.5),i=(y*size+x)*4;data[i]=data[i+1]=data[i+2]=Math.floor(255*clamp(w,.12,.91));data[i+3]=255;}const t=new THREE.DataTexture(data,size,size);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.minFilter=THREE.LinearMipmapLinearFilter;t.magFilter=THREE.LinearFilter;t.generateMipmaps=true;t.needsUpdate=true;return t;}
 function lipTintTexture(upper){const w=256,h=96,d=new Uint8Array(w*h*4);for(let y=0;y<h;y++)for(let x=0;x<w;x++){const u=x/(w-1)*2-1,v=y/(h-1),f=1-THREE.MathUtils.smoothstep(v,.58,1),t=f*Math.pow(Math.max(0,1-u*u),.18),c=new THREE.Color('#f0caba').lerp(new THREE.Color(upper?'#cd8a86':'#dc9a95'),t),grain=.008*Math.sin(u*370+v*3)*Math.sin(PI*v);c.r+=grain;c.g+=grain*.5;c.b+=grain*.5;c.convertLinearToSRGB();const i=(y*w+x)*4;d[i]=clamp(c.r*255,0,255);d[i+1]=clamp(c.g*255,0,255);d[i+2]=clamp(c.b*255,0,255);d[i+3]=255;}const t=new THREE.DataTexture(d,w,h);t.colorSpace=THREE.SRGBColorSpace;t.magFilter=THREE.LinearFilter;t.minFilter=THREE.LinearFilter;t.needsUpdate=true;return t;}
 function irisTexture(){const size=256,data=new Uint8Array(size*size*4);for(let y=0;y<size;y++)for(let x=0;x<size;x++){const dx=(x-size/2)/(size/2),dy=(y-size/2)/(size/2),r=Math.hypot(dx,dy),a=Math.atan2(dy,dx);const fibers=Math.sin(a*153+Math.sin(r*20)*2.5)*.12+Math.sin(a*279-r*48)*.09+Math.sin(a*67+r*39)*.1;const edge=1-.66*Math.pow(clamp((r-.70)/.29,0,1),2);const ring=1+.17*Math.sin(r*34+a*7);const f=edge*ring*(1+fibers)*(1-.24*g(r-.44,.12));const i=(y*size+x)*4;data[i]=clamp(68*f,0,255);data[i+1]=clamp(40*f,0,255);data[i+2]=clamp(28*f,0,255);data[i+3]=255;}const t=new THREE.DataTexture(data,size,size);t.colorSpace=THREE.SRGBColorSpace;t.needsUpdate=true;return t;}
-const faceRows=[
-[1.65,.001,.180,-.180,.180],[1.665,.068,.247,-.138,.150],[1.695,.138,.300,-.075,.110],[1.74,.211,.346,.035,.070],[1.80,.275,.383,.180,.030],[1.88,.336,.410,.300,.008],[1.98,.411,.419,.395,0],[2.10,.466,.422,.450,0],[2.22,.510,.421,.490,0],[2.38,.549,.430,.519,0],[2.56,.555,.433,.538,0],[2.76,.553,.451,.542,0],[2.96,.550,.468,.530,0],[3.13,.510,.449,.480,0],[3.26,.438,.389,.419,0],[3.35,.345,.308,.330,0],[3.41,.244,.219,.235,0],[3.455,.137,.124,.133,0],[3.474,.001,.001,.001,0]
-];
-const chinCenter=y=>interp(faceRows,y,4);
-const headWidth=y=>interp(faceRows,y,1)*(1+.070*g(y-2.26,.36)+.015*g(y-2.69,.30));
-const frontDepth=y=>interp(faceRows,y,2)-chinCenter(y);
-const backDepth=y=>interp(faceRows,y,3)+chinCenter(y);
-function scalpFront(x,y){const sy=clamp(y-.066,1.8,3.473);return faceZ(x/1.12,sy)*1.075+.028;}
-function eyeOpening(x,y){return [-1,1].some(side=>((x-side*.243)/.183)**2+((y-2.419)/.117)**2<1);}
-export function faceZ(x,y){const w=Math.max(.008,headWidth(y)),d=frontDepth(y),u=clamp(x/w,-.9999,.9999);let z=d*Math.pow(Math.sqrt(Math.max(0,1-u*u)),.85)+chinCenter(y);z+=.036*g(Math.abs(x)-.37,.14)*g(y-2.25,.18);z-=.037*g(Math.abs(x)-.233,.155)*g(y-2.419,.093);z+=.021*g(Math.abs(x)-.22,.17)*g(y-2.55,.065);z+=.054*g(x,.078)*g(y-2.38,.235);z+=.128*g(x,.096)*g(y-2.174,.075)+.017*g(x,.033)*g(y-2.111,.031);z+=.057*g(Math.abs(x)-.085,.045)*g(y-2.142,.052);z-=.005*g(Math.abs(x)-.108,.010)*g(y-2.139,.033);z-=.003*g(x,.023)*g(y-2.035,.054);z+=.003*g(Math.abs(x)-.028,.016)*g(y-2.035,.05);z+=.009*g(x,.20)*g(y-1.950,.10);z-=.01*g(x,.11)*g(y-1.86,.035);z+=.01*g(x,.19)*g(y-1.83,.06);z+=.015*g(Math.abs(x)-.26,.15)*g(y-2.325,.07);z-=.018*g(Math.abs(x)-.12,.05)*g(y-2.419,.10);return z;}
-function skinColor(x,y,front){const base=new THREE.Color('#efc6b6');let blush=(g(Math.abs(x)-.39,.16)*g(y-2.25,.16)*.44+g(x,.115)*g(y-2.14,.09)*.16)*front;base.lerp(new THREE.Color('#d98684'),blush);const under=g(Math.abs(x)-.23,.16)*g(y-2.355,.035)*front*.12;base.lerp(new THREE.Color('#bc8988'),under);const lids=g(Math.abs(x)-.23,.18)*g(y-2.495,.025)*front*.12;base.lerp(new THREE.Color('#bd8b7a'),lids);const light=g(x+.28,.24)*g(y-2.24,.30)*front*.075;base.lerp(new THREE.Color('#ffe1c7'),light);const grain=(rnd()-.5)*.003;base.r+=grain;base.g+=grain;base.b+=grain;return base;}
+const {headWidth,frontDepth,backDepth,chinCenter,faceZ}=createFaceDefinition(fit);
+export {faceZ};
+function skinColor(x,y,front){const base=new THREE.Color('#efc6b6');let blush=(g(Math.abs(x)-.39,.16)*g(y-2.25,.16)*.44+g(x,.115)*g(y-2.14-fit.noseShift,.09)*.16)*front;base.lerp(new THREE.Color('#d98684'),blush);const under=g(Math.abs(x)-.23,.16)*g(y-2.355,.035)*front*.12;base.lerp(new THREE.Color('#bc8988'),under);const lids=g(Math.abs(x)-.23,.18)*g(y-2.495,.025)*front*.12;base.lerp(new THREE.Color('#bd8b7a'),lids);const light=g(x+.28,.24)*g(y-2.24,.30)*front*.075;base.lerp(new THREE.Color('#ffe1c7'),light);const grain=(rnd()-.5)*.003;base.r+=grain;base.g+=grain;base.b+=grain;return base;}
 function shirtCenter(y){return -.065-.139*y+.097*y*y-.05*THREE.MathUtils.smoothstep(y,.70,.88);}
 export function buildPortrait({mobile=false}={}){
  seed=220901;
  const root=new THREE.Group();root.name='GPT-6 Astra Pro — original WebGL upper-body portrait';
- const pivot=new THREE.Group();pivot.name='Natural head tilt';pivot.position.set(.075,2.438,0);root.add(pivot);
- const head=new THREE.Group();head.position.y=-2.46;pivot.add(head);pivot.rotation.z=-.135;pivot.rotation.y=.035;
+ const pivot=new THREE.Group();pivot.name='Natural head tilt';pivot.position.set(fit.headX,fit.headY,0);pivot.scale.setScalar(fit.scale);root.add(pivot);
+ const head=new THREE.Group();head.position.y=-2.46;pivot.add(head);pivot.rotation.z=fit.roll;pivot.rotation.y=fit.yaw;
  const hairGroup=new THREE.Group();hairGroup.name='Original dimensional strand hair';head.add(hairGroup);
  const pore=noiseTexture();
  const skin=new THREE.MeshPhysicalMaterial({color:0xffffff,vertexColors:true,roughness:.48,metalness:0,specularIntensity:.30,specularColor:new THREE.Color('#fff1e4'),sheen:.15,sheenRoughness:.8,sheenColor:new THREE.Color('#e5a387'),bumpMap:pore,bumpScale:.00055});
@@ -68,52 +63,17 @@ export function buildPortrait({mobile=false}={}){
  }
  // Both ears are continuous sculpted volumes, not stacked torus primitives.
  for(const side of[-1,1])buildEar(head,side,skinPlain);
- const sclera=new THREE.MeshPhysicalMaterial({color:'#d7c9c2',map:scleraPigment(),roughness:.20,specularIntensity:.4});
- const rimMat=new THREE.MeshPhysicalMaterial({color:'#c8897a',roughness:.36,specularIntensity:.32});
- const irisMat=new THREE.MeshPhysicalMaterial({map:buildIrisTexture(),roughness:.42,specularIntensity:.18});
- const cornealMaterial=new THREE.MeshPhysicalMaterial({color:'#000000',transparent:true,blending:THREE.AdditiveBlending,opacity:1,ior:1.376,roughness:.083,specularIntensity:1,envMapIntensity:2.9,depthWrite:false});cornealMaterial.name='Optical cornea';cornealMaterial.userData.exportTransmission=true;
- const creaseMat=new THREE.MeshStandardMaterial({color:'#c29481',roughness:.95});
- for(const s of[-1,1]){
-  // Almond-shaped sclera is a curved surface, with dimensional skin margins (no floating white spheres).
-  const p=[],idx=[],uv=[];const nx=70,ny=20;
-  for(let j=0;j<=ny;j++)for(let i=0;i<=nx;i++){const t=-1+2*i/nx,v=j/ny,lo=eyeEdge(s,t,false),hi=eyeEdge(s,t,true),x=lo.x,y=mix(lo.y,hi.y,v),z=eyeSurface(s,x,y);p.push(x,y,z);uv.push(i/nx,v);if(j<ny&&i<nx){const k=j*(nx+1)+i;idx.push(k,k+1,k+nx+1,k+1,k+nx+2,k+nx+1);}}
-  mesh(makeGeometry(p,idx,uv),sclera,head,'Curved almond sclera '+s);
-  const ix=s*eyeX-.002,iy=eyeY+.004,iz=eyeSurface(s,ix,iy)+.002;
-  // Convex radial iris with an individually synthesized radial-fiber texture.
-  const ip=[ix,iy,iz+.003],iu=[.5,.5],ii=[];const nr=14,na=96,ir=.058;
-  for(let r=1;r<=nr;r++)for(let a=0;a<=na;a++){const rr=ir*r/nr,an=TAU*a/na;ip.push(ix+rr*Math.cos(an),iy+rr*Math.sin(an),iz+.003-.012*Math.pow(r/nr,2));iu.push(.5+.5*r/nr*Math.cos(an),.5+.5*r/nr*Math.sin(an));}
-  for(let a=0;a<na;a++)ii.push(0,1+a,2+a);
-  for(let r=1;r<nr;r++)for(let a=0;a<na;a++){const k=1+(r-1)*(na+1)+a;ii.push(k,k+na+1,k+1,k+1,k+na+1,k+na+2);}
-  for(let k=0;k<ip.length;k+=3){const t=clamp((ip[k]-s*eyeX)/eyeW,-.999,.999);ip[k+1]=clamp(ip[k+1],eyeEdge(s,t,false).y+.001,eyeEdge(s,t,true).y-.001);}
-  for(let k=0;k<ip.length;k+=3){const r=((ip[k]-ix)**2+(ip[k+1]-iy)**2)/(.058*.058);ip[k+2]=eyeSurface(s,ip[k],ip[k+1])+.002+.003*Math.max(0,1-r);}
-  mesh(makeGeometry(ip,ii,iu),irisMat,head,'Brown radial iris '+s);
-  // A clear curved optical layer supplies real environment reflections; the pupil is pigment, not a protruding ball.
-  const cp=ip.slice(),radius=.088,edgeHeight=Math.sqrt(radius*radius-ir*ir);
-  for(let k=0;k<cp.length;k+=3){
-   const dx=cp[k]-ix,dy=cp[k+1]-iy,radial=Math.min(ir*ir,dx*dx+dy*dy),t=clamp((cp[k]-s*eyeX)/eyeW,-.999,.999),lo=eyeEdge(s,t,false).y,hi=eyeEdge(s,t,true).y,margin=Math.min(cp[k+1]-lo,hi-cp[k+1]);
-   const bulge=Math.sqrt(Math.max(.0001,radius*radius-radial))-edgeHeight;
-   cp[k+2]=eyeSurface(s,cp[k],cp[k+1])+.0035+bulge*THREE.MathUtils.smoothstep(margin,0,.012);
-  }
-  const corneal=mesh(makeGeometry(cp,ii,iu),cornealMaterial,head,'Refractive corneal dome '+s);corneal.castShadow=false;
-
-  for(const upper of[true,false]){
-   let edgePts=[];for(let i=0;i<=55;i++){const t=-.99+1.98*i/55,e=eyeEdge(s,t,upper);e.z+=.0015;edgePts.push(e);}line(head,'Wet eyelid margin '+s+' '+upper,edgePts,upper?.00135:.0010,upper?lashMat:rimMat,60,5);
-  }
-  for(let i=0;i<32;i++){const t=-.95+1.9*(i+.2*rnd())/32,e=eyeEdge(s,t,true);e.z+=.003;const L=.012+.011*Math.pow((s*t+1)/2,1.5);line(head,'Upper eyelash '+s+' '+i,[e,e.clone().add(V(s*.004,L*.35,.009)),e.clone().add(V(s*(.007+.006*rnd()),L*.65,.016))],.00062+(.00024*rnd()),lashMat,7,4);}
-  for(let i=0;i<14;i++){const t=-.78+1.63*i/14,e=eyeEdge(s,t,false);line(head,'Fine lower eyelash '+s+' '+i,[e,e.clone().add(V(s*.003,-.008,.008)),e.clone().add(V(s*.006,-.012-.004*rnd(),.010))],.00032,lashMat,5,3);}
-  // Small tear duct integrated at the nasal corner.
-  const inner=eyeEdge(s,-s*.965,false);ball(head,'Lacrimal corner '+s,rimMat,[inner.x,inner.y+.006,inner.z],[.011,.01,.005],20);
- }
+ const eyeMaterials=buildEyes(head,{skinMaterial:skinPlain,faceSculpt});
  buildBrows(head,faceSculpt.zAt);
 
- for(const o of head.children)if(o.isMesh&&[lashMat,browMat,browBase,rimMat,irisMat,sclera,cornealMaterial].includes(o.material))o.castShadow=false;
+ for(const o of head.children)if(o.isMesh&&eyeMaterials.includes(o.material))o.castShadow=false;
  const groomStats=buildGroom({parent:hairGroup,skinMaterial:skinPlain,mobile,headWidth,faceZ,backDepth});
  // Tailored blouse is a separately batched collection of original sewn panels.
  const blouse=buildBlouse(root,{mobile});
- root.userData={author:'GPT-6 Astra Pro',tools:'Three.js / WebGL / JavaScript / Headless Chrome',source:'Original procedural geometry and maps in src/model.js, face-surface.js, groom.js, garment.js and surfaces.js',seed:220901};
+ root.userData={author:'GPT-6 Astra Pro',tools:'Three.js / WebGL / JavaScript / Headless Chrome',source:'Original procedural geometry and maps authored in src/; no reference pixels or external visual assets',seed:220901};
 
 
- function bakeAndWarp(o,hair=false,body=false){o.updateMatrix();o.geometry.applyMatrix4(o.matrix);o.position.set(0,0,0);o.quaternion.identity();o.scale.set(1,1,1);o.updateMatrix();const a=o.geometry.getAttribute('position');for(let i=0;i<a.count;i++){let x=a.getX(i),y=a.getY(i);if(body)y-=.12*(1-THREE.MathUtils.smoothstep(y,-.44,-.30));else if(!hair)y-=.02*(1-THREE.MathUtils.smoothstep(y,2.13,2.43));a.setXY(i,x,y);}a.needsUpdate=true;if(!hair&&!o.name.includes("Continuous facial sculpt"))o.geometry.computeVertexNormals();}
+ function bakeAndWarp(o,hair=false,body=false){o.updateMatrix();o.geometry.applyMatrix4(o.matrix);o.position.set(0,0,0);o.quaternion.identity();o.scale.set(1,1,1);o.updateMatrix();const a=o.geometry.getAttribute('position');for(let i=0;i<a.count;i++){let x=a.getX(i),y=a.getY(i);if(body)y-=.12*(1-THREE.MathUtils.smoothstep(y,-.44,-.30));else if(!hair)y-=fit.lowerWarp*(1-THREE.MathUtils.smoothstep(y,2.13,2.43));a.setXY(i,x,y);}a.needsUpdate=true;if(!hair&&!o.name.includes("Continuous facial sculpt"))o.geometry.computeVertexNormals();}
  head.traverse(o=>{if(o.isMesh)bakeAndWarp(o,o.parent===hairGroup,false);});
  for(const o of root.children)if(o.isMesh)bakeAndWarp(o,false,true);
  // Consolidate meshes by material inside each transform/layer group to keep mobile draw calls low.
@@ -124,7 +84,7 @@ export function buildPortrait({mobile=false}={}){
  }
  for(const o of root.children)if(o.isMesh)o.scale.x=1.27;
  const originalMaterials=new Map();root.traverse(o=>{if(o.isMesh)originalMaterials.set(o,o.material);});
- root.traverse(o=>{if(o.isMesh&&[lashMat,browMat,browBase,rimMat,irisMat,sclera,cornealMaterial].includes(o.material))o.castShadow=false;});
+ root.traverse(o=>{if(o.isMesh&&eyeMaterials.includes(o.material))o.castShadow=false;});
  const clayMat=new THREE.MeshStandardMaterial({color:'#bda18d',roughness:.85,side:THREE.DoubleSide});
  return {root,hairGroup,originalMaterials,clayMat,stats:{...groomStats,seed:220901},setClay(on){root.traverse(o=>{if(o.isMesh)o.material=on?clayMat:originalMaterials.get(o);});},setWire(on){const mats=new Set();root.traverse(o=>{if(o.isMesh)mats.add(o.material);});for(const m of mats)m.wireframe=on;}};
 }

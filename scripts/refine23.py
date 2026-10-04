@@ -1,0 +1,38 @@
+from pathlib import Path
+p=Path('src/model.js');s=p.read_text()
+s=s.replace("import * as THREE from 'three';", "import * as THREE from 'three';\nimport fit from './portrait-fit.json' with {type:'json'};\nimport {createFaceDefinition} from './facial-definition.js';")
+a=s.index('const faceRows=[');b=s.index('function skinColor(',a)
+s=s[:a]+'''const {headWidth,frontDepth,backDepth,chinCenter,faceZ}=createFaceDefinition(fit);
+export {faceZ};
+'''+s[b:]
+s=s.replace('pivot.position.set(.075,2.438,0)', 'pivot.position.set(fit.headX,fit.headY,0);pivot.scale.setScalar(fit.scale)')
+s=s.replace('pivot.rotation.z=-.135;pivot.rotation.y=.035', 'pivot.rotation.z=fit.roll;pivot.rotation.y=fit.yaw')
+s=s.replace('else if(!hair)y-=.02*','else if(!hair)y-=fit.lowerWarp*')
+s=s.replace('g(y-2.14,.09)*.16','g(y-2.14-fit.noseShift,.09)*.16')
+p.write_text(s)
+p=Path('src/face-surface.js');s=p.read_text().replace("import Delaunator from 'delaunator';", "import Delaunator from 'delaunator';\nimport fit from './portrait-fit.json' with {type:'json'};")
+s=s.replace('export const eyeY=2.419,eyeX=.243,eyeW=.128;', 'export const eyeY=2.419,eyeX=fit.eyeSpacing,eyeW=.128;\nexport const eyeCenterY=side=>eyeY-side*fit.eyeAsymmetry;')
+s=s.replace('y=eyeY+side*t*.009','y=eyeCenterY(side)+side*t*.009').replace('(y-eyeY)**2','(y-eyeCenterY(side))**2')
+s=s.replace('dy=y-eyeY-side*dx/eyeW*.009','dy=y-eyeCenterY(side)-side*dx/eyeW*.009').replace('ey=eyeY+side*.009*t','ey=eyeCenterY(side)+side*.009*t').replace('dy=y-eyeY-s*dx/eyeW*.009','dy=y-eyeCenterY(s)-s*dx/eyeW*.009')
+s=s.replace('seamY=t=>1.949-', 'seamY=t=>1.949+fit.mouthShift-')
+s=s.replace('stretch=1+.02*6*','stretch=1+fit.lowerWarp*6*')
+s=s.replace('const G=(x,s)=>Math.exp(-((x/s)**2));', '''const G=(x,s)=>Math.exp(-((x/s)**2));
+function nasalAperture(x,y){const q=(Math.abs(x)-.080)/.020,center=2.117+fit.noseShift+.006*q;return Math.exp(-q*q-((y-center)/.009)**2);}
+''')
+s=s.replace('Math.max(G(x-.065,.018)*G(y-2.117,.009),G(x+.065,.018)*G(y-2.117,.009))','nasalAperture(x,y)').replace('Math.max(G(x-.065,.018)*G(y-2.117,.007),G(x+.065,.018)*G(y-2.117,.007))','nasalAperture(x,y)')
+s=s.replace('z-=.012*cavity','z-=.016*cavity').replace(".61*Math.pow(cavity,.8)",".43*Math.pow(cavity,.8)")
+p.write_text(s)
+p=Path('src/eyes.js');s=p.read_text().replace('eyeX,eyeY,eyeW,eyeEdge,eyeSurface','eyeX,eyeY,eyeW,eyeEdge,eyeSurface,eyeCenterY').replace('iy=eyeY+.0035','iy=eyeCenterY(side)+.0035');p.write_text(s)
+p=Path('src/skin-atlas.js');s=p.read_text().replace("import * as THREE from 'three';", "import * as THREE from 'three';\nimport fit from './portrait-fit.json' with {type:'json'};")
+s=s.replace('seam=1.949-', 'seam=1.949+fit.mouthShift-')
+s=s.replace('lipHeight=(y>=seam?.059:.075)*f','lipHeight=(y>=seam?(.049+.013*G(Math.abs(r)-.29,.18)-.003*G(r,.10)):.075)*f')
+s=s.replace('+.034*lip*Math.sin','+.021*lip*Math.sin').replace('G(y-2.2,.27)','G(y-2.2-fit.noseShift,.27)').replace('G(y-2.104,.018)','G(y-2.104-fit.noseShift,.018)');p.write_text(s)
+p=Path('src/groom-flow.js');s=p.read_text().replace("import * as THREE from 'three';", "import * as THREE from 'three';\nimport fit from './portrait-fit.json' with {type:'json'};")
+s=s.replace('const headTilt=-.135','const headTilt=fit.roll')
+s=s.replace('x=cosTilt*(p.x-.075)+sinTilt*(p.y-2.438),y=-sinTilt*(p.x-.075)+cosTilt*(p.y-2.438)+2.46', 'x=(cosTilt*(p.x-fit.headX)+sinTilt*(p.y-fit.headY))/fit.scale,y=(-sinTilt*(p.x-fit.headX)+cosTilt*(p.y-fit.headY))/fit.scale+2.46')
+s=s.replace('rootFade=smooth(t,0,.055)','rootFade=smooth(t,.015,.20)')
+s=s.replace('const lift=(.006+.015*hash(id,923)+.006*Math.sin(t*13+phase))*rootFade','const lift=(.003+.011*hash(id,923)+.005*Math.sin(t*13+phase))*rootFade')
+s=s.replace("100,.0029,5,false),skinMaterial", "100,.0018,5,false),new THREE.MeshStandardMaterial({color:'#73574d',roughness:.85})")
+s=s.replace("applyHairShading(coreMat,{strength:.65});applyHairShading(cardMat,{strength:.55});applyHairShading(fineMat,{strength:.55});", "applyHairShading(coreMat,{strength:.31});applyHairShading(cardMat,{strength:.33});applyHairShading(fineMat,{strength:.35});")
+p.write_text(s)
+p=Path('src/hair-primitives.js');s=p.read_text().replace('(.05+.95*Math.min(1,t*16))','(.025+.975*THREE.MathUtils.smoothstep(t,.015,.17))');p.write_text(s)

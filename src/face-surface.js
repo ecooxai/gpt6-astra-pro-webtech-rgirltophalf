@@ -3,14 +3,18 @@
  */
 import * as THREE from 'three';
 import Delaunator from 'delaunator';
+import fit from './portrait-fit.json' with {type:'json'};
 const PI=Math.PI,TAU=2*PI,clamp=THREE.MathUtils.clamp;
 const G=(x,s)=>Math.exp(-((x/s)**2));
-export const eyeY=2.419,eyeX=.243,eyeW=.128;
+function nasalAperture(x,y){const q=(Math.abs(x)-.080)/.020,center=2.117+fit.noseShift+.006*q;return Math.exp(-q*q-((y-center)/.009)**2);}
+
+export const eyeY=2.419,eyeX=fit.eyeSpacing,eyeW=.128;
+export const eyeCenterY=side=>eyeY-side*fit.eyeAsymmetry;
 export function eyeEdge(side,t,upper){
- const x=side*eyeX+eyeW*t,y=eyeY+side*t*.009+(upper?.055:-.049)*Math.pow(Math.max(0,1-t*t),.72);
+ const x=side*eyeX+eyeW*t,y=eyeCenterY(side)+side*t*.009+(upper?.055:-.049)*Math.pow(Math.max(0,1-t*t),.72);
  return new THREE.Vector3(x,y,eyeSurface(side,x,y));
 }
-export function eyeSurface(side,x,y){return .212+Math.sqrt(Math.max(.00001,.18**2-(x-side*eyeX)**2-(y-eyeY)**2));}
+export function eyeSurface(side,x,y){return .212+Math.sqrt(Math.max(.00001,.18**2-(x-side*eyeX)**2-(y-eyeCenterY(side))**2));}
 function inEye(x,y,margin=0){
  for(const s of[-1,1]){const t=(x-s*eyeX)/eyeW;if(Math.abs(t)>1)continue;
  const lo=eyeEdge(s,t,false).y,hi=eyeEdge(s,t,true).y;
@@ -18,8 +22,8 @@ function inEye(x,y,margin=0){
  return false;
 }
 function nearestEdge(side,x,y){
- const dx=x-side*eyeX,dy=y-eyeY-side*dx/eyeW*.009,upper=dy>=0,h=upper?.055:-.049;
- const distance=theta=>{const t=Math.cos(theta),ex=side*eyeX+eyeW*t,ey=eyeY+side*.009*t+h*Math.pow(Math.sin(theta),1.44);return(ex-x)*(ex-x)+(ey-y)*(ey-y);};
+ const dx=x-side*eyeX,dy=y-eyeCenterY(side)-side*dx/eyeW*.009,upper=dy>=0,h=upper?.055:-.049;
+ const distance=theta=>{const t=Math.cos(theta),ex=side*eyeX+eyeW*t,ey=eyeCenterY(side)+side*.009*t+h*Math.pow(Math.sin(theta),1.44);return(ex-x)*(ex-x)+(ey-y)*(ey-y);};
  let best=0,min=Infinity;const steps=12;
  for(let i=0;i<=steps;i++){const d=distance(PI*i/steps);if(d<min){min=d;best=i;}}
  let lo=PI*Math.max(0,best-1)/steps,hi=PI*Math.min(steps,best+1)/steps;
@@ -27,7 +31,7 @@ function nearestEdge(side,x,y){
  let angle=(lo+hi)*.5;if(distance(0)<distance(angle))angle=0;if(distance(PI)<distance(angle))angle=PI;
  const t=Math.cos(angle);return{edge:eyeEdge(side,t,upper),vertical:Math.pow(Math.max(0,1-t*t),.7),upper};
 }
-export const seamY=t=>1.949-.007*(1-t*t)+.003*Math.cos(t*PI);
+export const seamY=t=>1.949+fit.mouthShift-.007*(1-t*t)+.003*Math.cos(t*PI);
 function lipShape(x,y){
  const t=x/.172;if(Math.abs(t)>=1.04)return null;
  const f=Math.max(0,1-t*t),s=seamY(t),upper=y>=s;
@@ -40,7 +44,7 @@ export function buildContinuousFace({parent,material,faceZ,headWidth,backDepth,c
   let z=faceZ(x,y);
   // An orbital transition with compact support, continuous with the surrounding face.
   for(const s of[-1,1]){
-   const dx=x-s*eyeX,dy=y-eyeY-s*dx/eyeW*.009;
+   const dx=x-s*eyeX,dy=y-eyeCenterY(s)-s*dx/eyeW*.009;
    if(Math.abs(dx)>.275||Math.abs(dy)>.225)continue;
    const {edge,vertical,upper}=nearestEdge(s,x,y);
    const dist=Math.hypot((x-edge.x),y-edge.y);
@@ -55,8 +59,8 @@ export function buildContinuousFace({parent,material,faceZ,headWidth,backDepth,c
    }
   }
   // Recessed nasal apertures remain part of the same mesh.
-  const cavity=Math.max(G(x-.065,.018)*G(y-2.117,.009),G(x+.065,.018)*G(y-2.117,.009));
-  z-=.012*cavity;
+  const cavity=nasalAperture(x,y);
+  z-=.016*cavity;
   const lip=lipShape(x,y);
   if(lip&&lip.v<1.45){const {v,f,upper}=lip;
    const shape=v<1?(.017*(1-v*v*(3-2*v))+(upper?.020:.029)*Math.sin(PI*v)**2):0;
@@ -77,8 +81,8 @@ export function buildContinuousFace({parent,material,faceZ,headWidth,backDepth,c
     c.lerp(new THREE.Color('#bc8d80'),.12*f);
     c.lerp(new THREE.Color('#ae7a71'),.11*G(y-e.y-.035,.008)*Math.max(0,1-t*t));}
   }
-  const cavity=Math.max(G(x-.065,.018)*G(y-2.117,.007),G(x+.065,.018)*G(y-2.117,.007));
-  c.lerp(new THREE.Color('#805046'),.61*Math.pow(cavity,.8));
+  const cavity=nasalAperture(x,y);
+  c.lerp(new THREE.Color('#805046'),.43*Math.pow(cavity,.8));
   const lip=lipShape(x,y);
   if(lip&&lip.v<1.4){
    const f=(1-THREE.MathUtils.smoothstep(lip.v,.79,1.21))*THREE.MathUtils.smoothstep(lip.f,0,.15);
@@ -113,7 +117,7 @@ export function buildContinuousFace({parent,material,faceZ,headWidth,backDepth,c
  }
  const tri=Delaunator.from(pts).triangles,p=[],uv=[],c=[],idx=[],norm=[];
  for(const [x,y]of xyz){p.push(x,y,zAt(x,y));uv.push((Math.asin(clamp(x/headWidth(y),-1,1))+PI)/TAU,(y-1.65)/1.824);const col=colorAt(x,y);c.push(col.r,col.g,col.b);
- const e=.0005,dx=(zAt(x+e,y)-zAt(x-e,y))/(2*e),dy=(zAt(x,y+e)-zAt(x,y-e))/(2*e),stretch=1+.02*6*clamp((y-2.13)/.30,0,1)*(1-clamp((y-2.13)/.30,0,1))/.30;
+ const e=.0005,dx=(zAt(x+e,y)-zAt(x-e,y))/(2*e),dy=(zAt(x,y+e)-zAt(x,y-e))/(2*e),stretch=1+fit.lowerWarp*6*clamp((y-2.13)/.30,0,1)*(1-clamp((y-2.13)/.30,0,1))/.30;
  const n=new THREE.Vector3(-dx,-dy/stretch,1).normalize();norm.push(n.x,n.y,n.z);}
  for(let i=0;i<tri.length;i+=3){const a=tri[i],b=tri[i+1],d=tri[i+2];const x=(xyz[a][0]+xyz[b][0]+xyz[d][0])/3,y=(xyz[a][1]+xyz[b][1]+xyz[d][1])/3;
   if(inEye(x,y,-.00015))continue;

@@ -5,6 +5,7 @@ const browser=await chromium.launch({executablePath:'/home/dev/.local/bin/chromi
 try{
  const page=await browser.newPage({viewport:{width:720,height:1080},deviceScaleFactor:1});page.setDefaultTimeout(180000);const errors=[],timings=[],start=Date.now();
  page.on('pageerror',e=>{errors.push(e.message);console.error(e.message);});
+ page.on('console',m=>{if(m.type()==='error'&&!m.text().includes('favicon')){errors.push(m.text());console.error(m.text());}});
  await page.goto('http://127.0.0.1:48763/?capture=1',{waitUntil:'networkidle',timeout:180000});await page.waitForFunction(()=>window.__portrait?.ready,null,{timeout:180000});
  console.log('READY_MS',Date.now()-start);
  for(const view of views){const frameStart=Date.now();await page.evaluate(v=>window.__portrait.setView(v),view);await page.waitForTimeout(500);await page.screenshot({path:`public/process/iteration-${n}-${view}.png`,animations:'disabled',timeout:180000});timings.push({view,elapsedMs:Date.now()-frameStart});console.log('CAPTURED',n,view,Date.now()-frameStart);}

@@ -30,7 +30,7 @@ export function ribbon(b,curve,width,depth,radial,color,{segments=90,across=6,of
  for(let j=0;j<=segments;j++){
   const t=j/segments,p=curve.getPoint(t),tan=curve.getTangent(t).normalize(),out=frameNormal(radial,t,p);
   const side=tan.clone().cross(out).normalize(),normal=side.clone().cross(tan).normalize();
-  const taper=Math.pow(Math.max(.00001,1-THREE.MathUtils.smoothstep(t,endStart,1)),tip)*(.70+.30*Math.min(1,t*12));
+  const taper=Math.pow(Math.max(.00001,1-THREE.MathUtils.smoothstep(t,endStart,1)),tip)*(.025+.975*THREE.MathUtils.smoothstep(t,.015,.17));
   for(let i=0;i<=across;i++){
    const u=i/across,q=u*2-1,bulge=depth*(1-q*q),pos=p.clone().addScaledVector(side,q*width*taper).addScaledVector(normal,offset+bulge*taper);
    b.p.push(pos.x,pos.y,pos.z);b.uv.push(u,t);if(color)b.color.push(color.r,color.g,color.b);
@@ -43,7 +43,7 @@ export function roundLock(b,curve,width,depth,radial,color,segments=85){
  const base=b.p.length/3,around=12;
  for(let j=0;j<=segments;j++){
   const t=j/segments,p=curve.getPoint(t),tan=curve.getTangent(t).normalize(),out=frameNormal(radial,t,p),side=tan.clone().cross(out).normalize(),normal=side.clone().cross(tan).normalize();
-  const taper=Math.pow(Math.max(.0001,1-THREE.MathUtils.smoothstep(t,.80,1)),.62)*(.6+.4*Math.min(1,t*14));
+  const taper=Math.pow(Math.max(.0001,1-THREE.MathUtils.smoothstep(t,.80,1)),.62)*(.025+.975*THREE.MathUtils.smoothstep(t,.015,.17));
   for(let i=0;i<=around;i++){
    const a=TAU*i/around,pp=p.clone().addScaledVector(side,Math.cos(a)*width*taper).addScaledVector(normal,Math.sin(a)*depth*taper);
    b.p.push(pp.x,pp.y,pp.z);b.uv.push(i/around,t);b.color.push(color.r,color.g,color.b);

@@ -1,0 +1,17 @@
+{
+  "headX": 0.06523113053557343,
+  "headY": 2.4745728156290356,
+  "roll": -0.12870518954516508,
+  "yaw": 0.04367169230990362,
+  "scale": 1.008293668570897,
+  "lowerWarp": 0.07521984246816361,
+  "noseShift": -0.0194853763316441,
+  "mouthShift": 0.0025708096869081535,
+  "eyeSpacing": 0.2428939563745855,
+  "eyeAsymmetry": 0.01527494860732789,
+  "fitStudy": {
+    "candidateBuilds": 20000,
+    "landmarkRmsePx": 2.947373921238575,
+    "guideMethod": "Hand-entered visual estimates from the supplied reference. These are approximate artistic guides, not measurements extracted from image pixels."
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "author": "GPT-6 Astra Pro",
+  "tools": "JavaScript · Three.js · deterministic procedural geometry tests",
+  "scope": "20,000 coarse head mesh builds and landmark-fit tests. This is not 20,000 full-scene rendered visual reviews.",
+  "guideMethod": "Hand-entered visual estimates from the supplied reference. These are approximate artistic guides, not measurements extracted from image pixels.",
+  "guideUncertaintyPx": 3.5,
+  "guideTargetsAt720x1080": {
+    "leftPupil": [
+      316.40625,
+      302.34375
+    ],
+    "rightPupil": [
+      442.96875,
+      327.65625
+    ],
+    "noseTip": [
+      374.765625,
+      407.8125
+    ],
+    "mouthSeam": [
+      357.1875,
+      459.84375
+    ],
+    "chin": [
+      351.5625,
+      530.859375
+    ]
+  },
+  "candidateBuilds": 20000,
+  "uniqueMeshes": 20000,
+  "invalidMeshes": 0,
+  "verticesPerCandidate": 1191,
+  "trianglesPerCandidate": 2320,
+  "baseline": {
+    "parameters": {
+      "headX": 0.075,
+      "headY": 2.438,
+      "roll": -0.135,
+      "yaw": 0.035,
+      "scale": 1,
+      "lowerWarp": 0.02,
+      "noseShift": 0,
+      "mouthShift": 0,
+      "eyeSpacing": 0.243,
+      "eyeAsymmetry": 0
+    },
+    "landmarkRmsePx": 9.811720284919708,
+    "projected": {
+      "leftPupil": [
+        318.2652278365781,
+        315.82937606348
+      ],
+      "rightPupil": [
+        444.7857284571107,
+        333.13516486384185
+      ],
+      "noseTip": [
+        374.57977802199855,
+        396.34587111163245
+      ],
+      "mouthSeam": [
+        364.8564907843103,
+        454.9476865626069
+      ],
+      "chin": [
+        352.3396910820648,
+        523.9452989912943
+      ]
+    }
+  },
+  "best": {
+    "parameters": {
+      "headX": 0.06523113053557343,
+      "headY": 2.4745728156290356,
+      "roll": -0.12870518954516508,
+      "yaw": 0.04367169230990362,
+      "scale": 1.008293668570897,
+      "lowerWarp": 0.07521984246816361,
+      "noseShift": -0.0194853763316441,
+      "mouthShift": 0.0025708096869081535,
+      "eyeSpacing": 0.2428939563745855,
+      "eyeAsymmetry": 0.01527494860732789
+    },
+    "landmarkRmsePx": 2.947373921238575,
+    "individualErrorsPx": {
+      "leftPupil": 0.2312130844746625,
+      "rightPupil": 0.2540749608610019,
+      "noseTip": 3.589970613677139,
+      "mouthSeam": 5.1381745047256295,
+      "chin": 2.007068841305547
+    },
+    "projected": {
+      "leftPupil": [
+        316.60083794564406,
+        302.46863002979785
+      ],
+      "rightPupil": [
+        443.2113126547848,
+        327.5806362165987
+      ],
+      "noseTip": [
+        371.20500493154555,
+        407.3543802174269
+      ],
+      "mouthSeam": [
+        362.28143938022197,
+        460.5165195234152
+      ],
+      "chin": [
+        349.57509627665684,
+        530.5791041057186
+      ]
+    },
+    "regularizedObjective": 8.937894122261858
+  },
+  "visualReviewRequired": true,
+  "elapsedMs": 36440,
+  "finishedAt": "2026-10-04T19:13:52.913Z",
+  "projectAbsolutePath": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf",
+  "logAbsolutePath": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/head-fit-candidates.ndjson.gz"
+}
