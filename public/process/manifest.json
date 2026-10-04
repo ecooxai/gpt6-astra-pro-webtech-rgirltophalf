@@ -1,9 +1,16 @@
 {
-  "revision": "2026-10-04T12:12:46.604028+00:00",
-  "score": 69,
-  "iterations": 9,
-  "note": "Review 9: 69/100. Better lower-face length, crown volume, and shoulder width. The dominant remaining gaps are skin response, hair-root flow, and collar placement. Scores are manual visual judgments, not measured similarity.",
+  "revision": "2026-10-04T12:34:11.430623+00:00",
+  "score": 66,
+  "iterations": 10,
+  "note": "Review 10: 66/100. Added procedural skin normals and denser hair, but excessive environment fill washed out facial contrast. That lighting regression is being corrected. Scores are manual visual judgments, not measured similarity.",
   "reviews": [
+    {
+      "title": "10 \u00b7 Surface and lighting regression",
+      "score": 66,
+      "image": "process/iteration-10-portrait.png",
+      "note": "Added procedural skin normals and denser hair, but excessive environment fill washed out facial contrast. That lighting regression is being corrected.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-10-portrait.png"
+    },
     {
       "title": "09 \u00b7 Portrait proportions",
       "score": 69,
