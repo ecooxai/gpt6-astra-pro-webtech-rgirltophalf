@@ -17,6 +17,18 @@ function inEye(x,y,margin=0){
  if(y>lo-margin&&y<hi+margin)return true;}
  return false;
 }
+function nearestEdge(side,x,y){
+ const dx=x-side*eyeX,dy=y-eyeY-side*dx/eyeW*.009,upper=dy>=0,h=upper?.061:-.043;
+ let t=clamp(Math.cos(Math.atan2(dy/Math.abs(h),dx/eyeW)),-.9998,.9998);
+ for(let k=0;k<5;k++){
+  const f=Math.max(.00004,1-t*t),ey=eyeY+side*.009*t+h*Math.pow(f,.72),ex=side*eyeX+eyeW*t;
+  const d1=side*.009-1.44*h*t*Math.pow(f,-.28),d2=-1.44*h*(Math.pow(f,-.28)+.56*t*t*Math.pow(f,-1.28));
+  const den=eyeW*eyeW+d1*d1+(ey-y)*d2;
+  if(den<=.00001)break;
+  t=clamp(t-clamp(((ex-x)*eyeW+(ey-y)*d1)/den,-.14,.14),-.99999,.99999);
+ }
+ return {edge:eyeEdge(side,t,upper),vertical:Math.pow(Math.max(0,1-t*t),.70),upper};
+}
 export const seamY=t=>1.949-.007*(1-t*t)+.003*Math.cos(t*PI);
 function lipShape(x,y){
  const t=x/.172;if(Math.abs(t)>=1.04)return null;
@@ -31,13 +43,13 @@ export function buildContinuousFace({parent,material,faceZ,headWidth,backDepth,c
   // An orbital transition with compact support, continuous with the surrounding face.
   for(const s of[-1,1]){
    const dx=x-s*eyeX,dy=y-eyeY-s*dx/eyeW*.009;
-   const angle=Math.atan2(dy/(dy>=0?.061:.043),dx/eyeW),t=Math.cos(angle),edge=eyeEdge(s,t,dy>=0);
+   const {edge,vertical,upper}=nearestEdge(s,x,y);
    const dist=Math.hypot((x-edge.x),y-edge.y);
    if(dist<.155&&Math.abs(dx)<.27&&Math.abs(dy)<.22){
     const delta=edge.z-faceZ(edge.x,edge.y);
     const fade=1-THREE.MathUtils.smoothstep(dist,0,.14);
     z+=delta*fade*fade;
-    const upper=dy>0,vertical=Math.pow(Math.abs(Math.sin(angle)),1.4);
+
     z+=.0032*G(dist-.012,.012)*vertical;
     if(upper)z-=.0038*G(dist-.033,.0075)*vertical;
     else z+=.004*G(dist-.030,.015)*vertical;
@@ -70,7 +82,7 @@ export function buildContinuousFace({parent,material,faceZ,headWidth,backDepth,c
    const f=(1-THREE.MathUtils.smoothstep(lip.v,.79,1.21))*THREE.MathUtils.smoothstep(lip.f,0,.15);
    c.lerp(new THREE.Color(lip.upper?'#c47f7e':'#d9918b'),f*.85);
    c.lerp(new THREE.Color('#773e40'),.72*G(y-lip.s,.0023)*Math.pow(lip.f,.5));
-   const grain=.015*Math.sin(x*310+Math.sin(y*79))*f;
+   const grain=.002*Math.sin(x*310+Math.sin(y*79))*f;
    c.r+=grain;c.g+=grain*.4;c.b+=grain*.3;
   }
   return c;
@@ -92,14 +104,21 @@ export function buildContinuousFace({parent,material,faceZ,headWidth,backDepth,c
    const a=Math.acos(t)*(upper?1:-1);add(e.x+d*Math.cos(a),e.y+d*Math.sin(a));
   }
  }
- const tri=Delaunator.from(pts).triangles,p=[],uv=[],c=[],idx=[];
- for(const [x,y]of xyz){p.push(x,y,zAt(x,y));uv.push((Math.asin(clamp(x/headWidth(y),-1,1))+PI)/TAU,(y-1.65)/1.824);const col=colorAt(x,y);c.push(col.r,col.g,col.b);}
+ for(let i=0;i<=180;i++){
+  const t=-.999+1.998*i/180,x=t*.172,sy=seamY(t),f=1-t*t;
+  const hu=(.033+.013*G(Math.abs(t)-.29,.18)-.003*G(t,.10))*Math.pow(f,.70),hl=.046*Math.pow(f,.70);
+  for(let j=-18;j<=18;j++)add(x,sy+(j>=0?hu:hl)*j/18);
+ }
+ const tri=Delaunator.from(pts).triangles,p=[],uv=[],c=[],idx=[],norm=[];
+ for(const [x,y]of xyz){p.push(x,y,zAt(x,y));uv.push((Math.asin(clamp(x/headWidth(y),-1,1))+PI)/TAU,(y-1.65)/1.824);const col=colorAt(x,y);c.push(col.r,col.g,col.b);
+ const e=.0005,dx=(zAt(x+e,y)-zAt(x-e,y))/(2*e),dy=(zAt(x,y+e)-zAt(x,y-e))/(2*e),stretch=1+.07*6*clamp((y-2.13)/.30,0,1)*(1-clamp((y-2.13)/.30,0,1))/.30;
+ const n=new THREE.Vector3(-dx,-dy/stretch,1).normalize();norm.push(n.x,n.y,n.z);}
  for(let i=0;i<tri.length;i+=3){const a=tri[i],b=tri[i+1],d=tri[i+2];const x=(xyz[a][0]+xyz[b][0]+xyz[d][0])/3,y=(xyz[a][1]+xyz[b][1]+xyz[d][1])/3;
   if(inEye(x,y,-.00015))continue;
   const cross=(p[b*3]-p[a*3])*(p[d*3+1]-p[a*3+1])-(p[b*3+1]-p[a*3+1])*(p[d*3]-p[a*3]);
   if(cross>0)idx.push(a,b,d);else idx.push(a,d,b);
  }
- const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(p,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setAttribute('color',new THREE.Float32BufferAttribute(c,3));geo.setIndex(idx);geo.computeVertexNormals();
+ const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(p,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setAttribute('color',new THREE.Float32BufferAttribute(c,3));geo.setIndex(idx);geo.setAttribute("normal",new THREE.Float32BufferAttribute(norm,3));
  const mesh=new THREE.Mesh(geo,material);mesh.name='Continuous facial sculpt — exact eye rims and integrated lips';mesh.castShadow=mesh.receiveShadow=true;parent.add(mesh);
  // Anatomical posterior volume; no image plane or view-dependent texture.
  const bp=[],bu=[],bc=[],bi=[],bn=120;

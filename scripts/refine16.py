@@ -1,0 +1,30 @@
+from pathlib import Path
+p=Path('src/groom.js');s=p.read_text()
+s=s.replace('2.19+1.15*Math.pow(front,1.2)','2.19+.89*Math.pow(front,1.2)')
+s=s.replace("rgba[k]=Math.round(62*tone);rgba[k+1]=Math.round(44*tone);rgba[k+2]=Math.round(40*tone)","rgba[k]=Math.round(39*tone);rgba[k+1]=Math.round(31*tone);rgba[k+2]=Math.round(31*tone)")
+s=s.replace("new THREE.Color('#59423c')","new THREE.Color('#342b2b')")
+s=s.replace("new THREE.Color('#4d3833')","new THREE.Color('#362b2b')").replace("new THREE.Color('#53403a')","new THREE.Color('#3b3030')")
+s=s.replace("new THREE.Color('#312321')","new THREE.Color('#241c1d')").replace("new THREE.Color('#2c2120')","new THREE.Color('#241c1d')")
+s=s.replace("sheenColor:new THREE.Color('#796068')","sheenColor:new THREE.Color('#5c5155')")
+s=s.replace('for(let i=0;i<64;i++){','for(let i=0;i<64;i++){\n  state=93163+i*2719;')
+s=s.replace('for(const side of[-1,1])for(let i=0;i<30;i++){','for(const side of[-1,1])for(let i=0;i<30;i++){\n  state=182911+(side+1)*7879+i*13337;')
+s=s.replace('for(const side of[-1,1])for(let i=0;i<40;i++){','for(const side of[-1,1])for(let i=0;i<40;i++){\n  state=263239+(side+1)*4919+i*3191;')
+s=s.replace('const endY=-.32+.20*r+.10*layer;', 'const endY=-.37+.37*r+.10*layer,phase=r*6.283;')
+s=s.replace('V(side*(.42+(side<0?.43:.55)*layer),1.00,.51+.12*layer)', 'V(side*(.42+(side<0?.43:.55)*layer+.024*Math.sin(phase)),1.00,.51+.12*layer+.022*Math.sin(phase+layer))')
+s=s.replace('V(side*(.53+(side<0?.43:.53)*layer),.52,.63+.045*Math.sin(layer*5))', 'V(side*(.53+(side<0?.43:.53)*layer+.038*Math.sin(phase+1)),.52,.63+.052*Math.sin(phase+layer*3))')
+s=s.replace('V(side*(.57+(side<0?.35:.43)*layer),.13,.57+.07*layer)', 'V(side*(.57+(side<0?.35:.43)*layer+.047*Math.sin(phase+2)),.13,.57+.07*layer+.027*Math.sin(phase))')
+s=s.replace('V(side*((side<0?.29:.41)+.37*layer),endY,.49+.08*layer)', 'V(side*((side<0?.29:.41)+.37*layer+.04*Math.sin(phase+3)),endY,.49+.08*layer)')
+# Root fibers trace the actual scalp instead of floating off its boundary.
+s=s.replace('ribbon(cards,curve,.018+.014*r,.003,radial,null,{segments:75,across:4,offset:.009,tip:.5});cardCount++;', 'ribbon(cards,curve,.015+.008*r,.002,radial,null,{segments:75,across:4,offset:.003,tip:.5});cardCount++;fineFibers(curve,radial,.013,mobile?20:30);')
+p.write_text(s)
+p=Path('src/model.js');s=p.read_text().replace("import { buildBlouse } from './garment.js';", "import { buildBlouse } from './garment.js';\nimport { buildEar } from './ear.js';")
+a=s.index(' // Ears with helix');b=s.index(' const sclera=',a)
+s=s[:a]+''' // Both ears are continuous sculpted volumes, not stacked torus primitives.
+ for(const side of[-1,1])buildEar(head,side,skinPlain);
+'''+s[b:]
+s=s.replace("color:'#e8e1dc',map:scleraPigment()","color:'#d7c9c2',map:scleraPigment()")
+s=s.replace('iy=eyeY+.001','iy=eyeY+.007')
+s=s.replace('],.0009+(.0004*rnd()),lashMat','],.00062+(.00024*rnd()),lashMat')
+s=s.replace('for(let i=0;i<128;i++)','for(let i=0;i<190;i++)').replace('(i+rnd())/128','(i+rnd())/190')
+s=s.replace("line(head,'Soft brow foundation '+s,browPts,.007,browBase,40,5)","line(head,'Soft brow foundation '+s,browPts,.008,browBase,40,5)")
+p.write_text(s)

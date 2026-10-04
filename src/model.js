@@ -4,6 +4,8 @@
  * No reference pixels, stock meshes, character packages or generated images are used.
  */
 import * as THREE from 'three';
+import { buildGroom } from './groom.js';
+import { buildBlouse } from './garment.js';
 import { buildContinuousFace, eyeEdge, eyeSurface, eyeY, eyeX, eyeW } from './face-surface.js';
 import { skinMicrostructure, hairSurfaceMaps, hairlineMask, scleraPigment } from './surfaces.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
@@ -44,24 +46,12 @@ export function buildPortrait({mobile=false}={}){
  const pore=noiseTexture();
  const skin=new THREE.MeshPhysicalMaterial({color:0xffffff,vertexColors:true,roughness:.48,metalness:0,specularIntensity:.30,specularColor:new THREE.Color('#fff1e4'),sheen:.15,sheenRoughness:.8,sheenColor:new THREE.Color('#e5a387'),bumpMap:pore,bumpScale:.00055});
  const micro=skinMicrostructure();skin.map=micro.albedo;skin.normalMap=micro.normal;skin.normalScale.set(.18,.18);skin.roughnessMap=micro.roughness;skin.roughness=.68;skin.specularIntensity=.48;skin.sheen=.12;skin.clearcoat=.035;skin.clearcoatRoughness=.55;skin.bumpMap=null;
- const skinPlain=skin.clone();skinPlain.vertexColors=false;skinPlain.color.set('#efcbb9');
+ const skinPlain=skin.clone();skinPlain.vertexColors=false;skinPlain.color.set('#efc6b6');
  const innerEar=new THREE.MeshStandardMaterial({color:'#c98c7a',roughness:.63});
  const dark=new THREE.MeshStandardMaterial({color:'#70473b',roughness:.85});
- const hairmat=new THREE.MeshPhysicalMaterial({color:0xffffff,vertexColors:true,roughness:.36,metalness:0,specularIntensity:.45,sheen:.45,sheenColor:new THREE.Color('#5b4033'),sheenRoughness:.48});
- const haircapmat=new THREE.MeshPhysicalMaterial({color:'#241917',roughness:.40,specularIntensity:.35,sheen:.35,sheenColor:new THREE.Color('#4c3630')});
- const hairThin=new THREE.MeshPhysicalMaterial({color:0xffffff,vertexColors:true,roughness:.40,specularIntensity:.48,sheen:.5,sheenRoughness:.35,sheenColor:new THREE.Color('#856552'),side:THREE.DoubleSide});
- const strandMap=strandTexture();
- const strandSurfaces=hairSurfaceMaps(strandMap);
- for(const mat of [hairmat,haircapmat]){mat.map=strandSurfaces.albedo;mat.color.multiplyScalar(1.7);mat.normalMap=strandSurfaces.normal;mat.normalScale.set(.7,.3);mat.roughnessMap=strandSurfaces.roughness;mat.roughness=.71;mat.anisotropy=.82;mat.anisotropyRotation=Math.PI/2;mat.specularIntensity=.52;}
- haircapmat.roughness=.90;haircapmat.specularIntensity=.25;haircapmat.alphaMap=hairlineMask();haircapmat.alphaTest=.15;
- hairThin.roughness=.37;hairThin.specularIntensity=.68;hairThin.anisotropy=.85;hairThin.anisotropyRotation=Math.PI/2;
-
  const browMat=new THREE.MeshStandardMaterial({color:'#44302a',roughness:.79});
  const browBase=new THREE.MeshStandardMaterial({color:'#957064',roughness:.9});
  const lashMat=new THREE.MeshStandardMaterial({color:'#39241f',roughness:.63});
- const white=new THREE.MeshPhysicalMaterial({color:'#ecebf1',roughness:.66,sheen:.7,sheenColor:new THREE.Color('#fffaf4'),sheenRoughness:.84,bumpMap:pore,bumpScale:.00032,side:THREE.DoubleSide});
- const stitch=new THREE.MeshStandardMaterial({color:'#cccbd4',roughness:.92});
- const buttonMat=new THREE.MeshPhysicalMaterial({color:'#f4eee1',roughness:.29,specularIntensity:.5});
  // Seamless face with precise curved eye boundaries and embedded nasal/lip relief.
  buildContinuousFace({parent:head,material:skin,faceZ,skinColor,headWidth,backDepth,chinCenter,mobile});
  // Neck and upper sternum taper into the blouse, not a floating head.
@@ -108,7 +98,7 @@ export function buildPortrait({mobile=false}={}){
    let edgePts=[];for(let i=0;i<=55;i++){const t=-.99+1.98*i/55,e=eyeEdge(s,t,upper);e.z+=.0015;edgePts.push(e);}line(head,'Wet eyelid margin '+s+' '+upper,edgePts,upper?.0020:.0012,upper?lashMat:rimMat,60,5);
   }
   for(let i=0;i<32;i++){const t=-.95+1.9*(i+.2*rnd())/32,e=eyeEdge(s,t,true);e.z+=.003;const L=.012+.011*Math.pow((s*t+1)/2,1.5);line(head,'Upper eyelash '+s+' '+i,[e,e.clone().add(V(s*.004,L*.35,.009)),e.clone().add(V(s*(.007+.006*rnd()),L*.65,.016))],.0009+(.0004*rnd()),lashMat,7,4);}
-  for(let i=0;i<14;i++){const t=-.78+1.63*i/14,e=eyeEdge(s,t,false);line(head,'Fine lower eyelash '+s+' '+i,[e,e.clone().add(V(s*.003,-.008,.008)),e.clone().add(V(s*.006,-.012-.004*rnd(),.010))],.00048,lashMat,5,3);}
+  for(let i=0;i<14;i++){const t=-.78+1.63*i/14,e=eyeEdge(s,t,false);line(head,'Fine lower eyelash '+s+' '+i,[e,e.clone().add(V(s*.003,-.008,.008)),e.clone().add(V(s*.006,-.012-.004*rnd(),.010))],.00032,lashMat,5,3);}
   // Small tear duct integrated at the nasal corner.
   const inner=eyeEdge(s,-s*.965,false);ball(head,'Lacrimal corner '+s,rimMat,[inner.x,inner.y+.006,inner.z],[.011,.01,.005],20);
   // Eyebrow base is subdued; individual growing hairs define its upper silhouette.
@@ -116,112 +106,13 @@ export function buildPortrait({mobile=false}={}){
   line(head,'Soft brow foundation '+s,browPts,.007,browBase,40,5);
   for(let i=0;i<128;i++){let t=(i+rnd())/128,x=s*(.10+.303*t),y=2.545+.026*Math.sin(PI*t*.92)-.026*t+(rnd()-.5)*.023,zz=faceZ(x,y)+.013;let l=.015*(1-.7*t)+rnd()*.008;line(head,'Brow hair '+s+' '+i,[[x,y,zz],[x+s*.006,y+l*.66,zz+.001],[x+s*(.007+t*.013),y+l,faceZ(x+s*.01,y+l)+.012]],.00045+(.00025*rnd()),browMat,5,3);}
  }
- // Scalp undercoat is closed at the crown and follows an anatomical hairline.
- {
- const p=[],idx=[],uv=[];const nr=85,na=180;
- for(let j=0;j<=nr;j++)for(let i=0;i<=na;i++){const a=-PI+TAU*i/na,front=Math.max(0,Math.cos(a)),bottom=2.17+.91*Math.pow(front,1.3)+.28*g(a+1.25,.30),y=mix(3.539,bottom,j/nr),sy=clamp(y-.066,1.8,3.473),w=headWidth(sy)*1.12+.008*Math.sin(PI*j/nr),x=w*Math.sin(a);const z=Math.cos(a)>=0?faceZ(x/1.12,sy)*1.075+.022*Math.sin(PI*j/nr):-backDepth(sy)*Math.pow(-Math.cos(a),.85)*1.12;p.push(x,y,z);uv.push(i/na,j/nr);if(j<nr&&i<na){const k=j*(na+1)+i;idx.push(k,k+na+1,k+1,k+1,k+na+1,k+na+2);}}
- mesh(makeGeometry(p,idx,uv),haircapmat,hairGroup,'Hairline and closed scalp undercoat');
- }
- // Coherent clump guides run from an off-center part, over the skull, around the shoulders and into curled tips.
- function guide(a,jitter=0,phase=0){const s=Math.sin(a),c=Math.cos(a),fr=Math.max(c,0);const end=-.19+.23*Math.pow(Math.abs(c),2)+jitter*.13;
- return new THREE.CatmullRomCurve3([
- V(.105+jitter*.018,3.507-.13*Math.pow(c,2),.37*c),
- V(.44*s+.032,3.335-.035*c,.606*c),
- V(.665*s+.012,2.97-.025*c,.672*c),
- V((fr>.4?Math.sign(s)*Math.max(.57,Math.abs(.67*s)):.67*s),2.42,(s<0&&c>.18?-.08:.607*c)),
- V((.72+.032*Math.sin(phase))*s,1.79,.62*c+.05*fr),
- V((.79+.04*Math.sin(phase+1))*s,1.16,.60*c+.11*fr),
- V((.94+.065*Math.sin(phase))*s,.65,.60*c+.17*fr),
- V((.96+.08*Math.sin(phase+1.5))*s,.16,.56*c+.19*fr),
- V((.71+.08*Math.sin(phase+2))*s,end,.48*c+.14*fr)
- ],false,'catmullrom',.35);}
- const hp=[],hi=[],hu=[],hc=[];
- function solidLock(curve,width,thick,color,radial,segments=48){const base=hp.length/3,around=7;for(let j=0;j<=segments;j++){const t=j/segments,p=curve.getPoint(t),tan=curve.getTangent(t).normalize();const no=radial.clone().add(V(0,.12*(1-t),0)).normalize();const side=tan.clone().cross(no).normalize();const normal=side.clone().cross(tan).normalize();let taper=Math.pow(Math.max(.001,Math.sin(PI*.5*(1-t))),.7)*Math.pow(Math.min(1,t*16),.45);for(let i=0;i<=around;i++){let a=TAU*i/around;const pp=p.clone().addScaledVector(side,Math.cos(a)*width*taper).addScaledVector(normal,Math.sin(a)*thick*taper);hp.push(pp.x,pp.y,pp.z);hu.push(i/around,t);hc.push(color.r,color.g,color.b);if(j<segments&&i<around){const k=base+j*(around+1)+i;hi.push(k,k+around+1,k+1,k+1,k+around+1,k+around+2);}}}}
- for(let i=0;i<122;i++){const a=.70+(TAU-1.40)*(i+.5)/122,phase=rnd()*TAU,col=new THREE.Color().setHSL(.025+rnd()*.016,.16+rnd()*.12,.082+rnd()*.035,THREE.SRGBColorSpace);solidLock(guide(a,rnd()*2-1,phase),.062+rnd()*.025,.029+rnd()*.013,col,V(Math.sin(a),0,Math.cos(a)),46);}
-
- const frontGuides=[];
- for(const side of [-1,1])for(let j=0;j<(side===1?38:30);j++){
-  const t=j/(side===1?37:29),r=rnd(),z=.49+.13*t;
-  const curve=new THREE.CatmullRomCurve3([
-   V(.10+(t-.5)*.025,3.46-.10*t,scalpFront(.10+(t-.5)*.025,3.46-.10*t)+.020),
-   V(side*(.35+.13*t),3.25-.12*t,scalpFront(side*(.35+.13*t),3.25-.12*t)+.035),
-   V(side*(.57+.09*t),2.80,side<0?.15:.47-.08*t),
-   V(side*(.57+.10*t),2.12,side<0?-.07:.43-.03*t),
-   V(side*(.58+.20*t),1.45,.48+.04*t),
-   V(side*(.52+.32*t),.92,z+.055*Math.sin(t*5)),
-   V(side*(.77+.25*t),.37,z-.05),
-   V(side*(.69+.24*t),.05,.49-.02*t),
-   V(side*(.39+.39*t),-.23+.22*t+.08*r,.46)
-  ],false,'catmullrom',.35);
-  const radial=V(side*.22,0,1).normalize();
-  solidLock(curve,.030+.013*r,.021+.006*r,new THREE.Color().setHSL(.032,.18,.09+.037*r,THREE.SRGBColorSpace),radial,52);
-  frontGuides.push({curve,radial});
- }
-
- const sp=[],si=[],su=[],sc=[],sn=[];
- function filament(curve,width,col,radial,offset=0,phase=0,segments=40){segments=Math.max(18,Math.round(segments*(mobile?.68:1)));const base=sp.length/3;for(let j=0;j<=segments;j++){const t=j/segments,p=curve.getPoint(t),tan=curve.getTangent(t).normalize();const side=tan.clone().cross(radial).normalize(),normal=side.clone().cross(tan).normalize();const taper=Math.pow(Math.max(.0001,1-t),.60),off=offset*(.05+.95*Math.pow(1-t,.45))+.0025*Math.sin(t*18+phase);p.addScaledVector(side,off);p.addScaledVector(normal,.038+.0018*Math.sin(t*37+phase));for(let k=0;k<2;k++){const pp=p.clone().addScaledVector(side,(k?1:-1)*width*taper);sp.push(pp.x,pp.y,pp.z);su.push(k,t);sc.push(col.r,col.g,col.b);const surfaceNormal=normal.clone().multiplyScalar(.85).addScaledVector(side,(k?1:-1)*.53).normalize();sn.push(surfaceNormal.x,surfaceNormal.y,surfaceNormal.z);}if(j<segments){const k=base+j*2;si.push(k,k+1,k+2,k+1,k+3,k+2);}}}
- const strandCount=mobile?3300:6000;
- for(let i=0;i<strandCount;i++){const a=.70+(TAU-1.40)*rnd(),phase=rnd()*TAU;const color=new THREE.Color().setHSL(.03+rnd()*.018,.14+rnd()*.14,.10+rnd()*.062,THREE.SRGBColorSpace);filament(guide(a,rnd()*2-1,phase),.00075+rnd()*.00105,color,V(Math.sin(a),.03,Math.cos(a)).normalize(),(rnd()-.5)*.068,phase,40);}
-
- for(const {curve,radial} of frontGuides)for(let i=0;i<(mobile?48:80);i++)filament(curve,.00065+rnd()*.0005,new THREE.Color().setHSL(.032,.15,.11+rnd()*.07,THREE.SRGBColorSpace),radial,(rnd()-.5)*.050,rnd()*TAU,46);
-
- const scalpFibers=mobile?1400:2800;
- for(const side of[-1,1])for(let j=0;j<scalpFibers/2;j++){
- const r=rnd(),ry=3.515-.15*r,rx=.09+(rnd()-.5)*.018,ex=side*(.54+.035*r),ey=2.80+.19*r,pts=[];
- for(let k=0;k<=22;k++){const t=k/22,q=1-t,x=q*q*rx+2*q*t*side*.23+t*t*ex,y=q*q*ry+2*q*t*(3.37-.10*r)+t*t*ey;pts.push(V(x,y,scalpFront(x,y)+.009));}
- filament(new THREE.CatmullRomCurve3(pts),.0006+rnd()*.00045,new THREE.Color().setHSL(.025,.13,.105+rnd()*.08,THREE.SRGBColorSpace),V(0,0,1),(rnd()-.5)*.005,rnd()*TAU,34);
- }
- // Sparse fringes are individual tapered locks; the forehead remains visible between wisps.
- const bangs=[];
- const fringePaths=[
- [[.10,3.43],[-.08,3.23],[-.28,2.98],[-.44,2.61],[-.51,2.15]],
- [[.13,3.42],[.025,3.19],[-.13,2.88],[-.26,2.61],[-.37,2.39]],
- [[.15,3.41],[.095,3.17],[.02,2.88],[-.07,2.65],[-.14,2.54]],
- [[.18,3.40],[.18,3.15],[.145,2.91],[.09,2.67],[.03,2.53]],
- [[.19,3.38],[.24,3.12],[.235,2.9],[.18,2.72],[.12,2.57]],
- [[.16,3.40],[.10,3.18],[-.035,2.90],[-.19,2.68],[-.29,2.51]]];
- for(let b=0;b<fringePaths.length;b++){
- const pts=fringePaths[b].map(([x,y])=>V(x,y,y>3.04?scalpFront(x,y)+.015:faceZ(x,y)+.028));const curve=new THREE.CatmullRomCurve3(pts,false,'catmullrom',.4);bangs.push(curve);
- const width=[.014,.010,.007,.006,.004,.005][b];solidLock(curve,width,.003,new THREE.Color('#29201e'),V(0,0,1),42);
- for(let k=0;k<48;k++){const c=new THREE.Color().setHSL(.025,.14,.09+rnd()*.06,THREE.SRGBColorSpace);filament(curve,.0004+rnd()*.0004,c,V(0,0,1),(rnd()-.5)*width*2.3,rnd()*TAU,40);}
- }
- // Side-swept hero strands help the front silhouette remain asymmetric and natural.
- for(const s of[-1,1])for(let i=0;i<42;i++){const o=(rnd()-.5)*.03;const curve=new THREE.CatmullRomCurve3([V(.07+o,3.48,.34),V(s*.29,3.29,.54),V(s*(.51+o),2.81,.47),V(s*(.49+o),2.35,.45),V(s*(.57+o),1.82,.39),V(s*(.61+o),1.11,.41)]);filament(curve,.0006+rnd()*.0008,new THREE.Color('#48332a'),V(s*.4,0,1).normalize(),o,0,42);}
- mesh(makeGeometry(hp,hi,hu,hc),hairmat,hairGroup,'Layered volumetric hair clumps');
- const fineHair=mesh(makeGeometry(sp,si,su,sc,sn),hairThin,hairGroup,'Individually swept fine hair strands');fineHair.castShadow=false;
- // A subtly visible scalp part: short, narrow and naturally interrupted by crossing roots.
- line(hairGroup,'Off-center scalp part',[[.105,3.519,-.25],[.108,3.546,-.09],[.107,3.548,.06],[.104,3.512,.23]],.0027,skinPlain,40,5);
- // Tailored blouse with a true V opening, radial shoulder construction and geometric wrinkles.
- const shirtRows=[[-.43,.80,.365],[-.22,.79,.377],[0,.76,.39],[.46,.79,.402],[.82,.86,.36],[1.03,.965,.294],[1.20,.74,.244],[1.43,.264,.205]];
- function shirtFront(x,y){const w=Math.max(.26,interp(shirtRows,y,1)),d=interp(shirtRows,y,2),u=clamp(x/w,-.999,.999);let z=d*Math.sqrt(Math.max(0,1-u*u));z+=.003*Math.sin(y*15+x*5)*g(x,.29);z+=.006*Math.sin(y*16+Math.abs(x)*11)*g(Math.abs(x)-.56,.23);z+=.003*Math.sin(y*31-x*6)*g(y-.55,.38);return z;}
- {
- const p=[],idx=[],uv=[];const ny=128,na=180;
- for(let j=0;j<=ny;j++){const y=mix(-.43,1.43,j/ny),w=interp(shirtRows,y,1),d=interp(shirtRows,y,2),open=y>.85?Math.min(.99,(y-.85)*.70/w):0;const a0=Math.asin(open);for(let i=0;i<=na;i++){const a=a0+(TAU-2*a0)*i/na,x=w*Math.sin(a)+shirtCenter(y)*THREE.MathUtils.smoothstep(y,.70,.85)*Math.pow(Math.max(0,Math.cos(a)),6),front=Math.cos(a)>0;let z=front?shirtFront(x,y):d*Math.cos(a);const xfold=.004*Math.sin(a*12+y*3)*g(y-.85,.4);p.push(x+xfold,y,z);uv.push(i/na,j/ny);if(j<ny&&i<na){const k=j*(na+1)+i;idx.push(k,k+na+1,k+1,k+1,k+na+1,k+na+2);}}}
- mesh(makeGeometry(p,idx.map((_,i)=>idx[i-i%3+2-i%3]),uv),white,root,'Tailored white blouse with open neckline');
- }
- // Sleeves are tapered volumetric surfaces with soft elbow/arm folds, not cylinders.
- for(const s of[-1,1]){
- const p=[],idx=[],uv=[];const ny=85,na=64;
- const center=t=>V(s*(.735+.19*Math.sin(t*PI*.5)),mix(1.18,-.435,t),-.025+.012*Math.sin(t*PI));
- for(let j=0;j<=ny;j++){const t=j/ny,c=center(t),w=.238*(1-.19*t)*Math.min(1,.13+t*11),d=.265*(1-.19*t)*Math.min(1,.13+t*11);for(let i=0;i<=na;i++){const a=TAU*i/na;const fold=.010*Math.sin(17*t+5*a)*Math.pow(Math.sin(PI*t),2)+.010*g(t-.27,.17)*Math.sin(27*t+3*a);p.push(c.x+s*(w+fold)*Math.sin(a),c.y+.026*Math.sin(a),c.z+(d+fold)*Math.cos(a));uv.push(i/na,t);if(j<ny&&i<na){const k=j*(na+1)+i;if(s===1)idx.push(k,k+1,k+na+1,k+1,k+na+2,k+na+1);else idx.push(k,k+na+1,k+1,k+1,k+na+1,k+na+2);}}}
- mesh(makeGeometry(p,idx.map((_,i)=>idx[i-i%3+2-i%3]),uv),white,root,'Sculpted long sleeve '+s);
- let seams=[];for(let i=0;i<=45;i++){const a=-PI*.4+PI*.8*i/45;seams.push([s*(.805+.232*Math.sin(a)),1.005+.026*Math.sin(a),-.025+.268*Math.cos(a)]);}line(root,'Shoulder seam '+s,seams,.0016,stitch,50,4);
- }
- // Folded collar wings are doubly curved, thickened patches, with a visible stitched outer edge.
- function collarPoint(s,u,v){const A=V(s*.236,1.458,.209),B=V(s*.515,1.122,.277),C=V(shirtCenter(.79)+s*.36,.79,shirtFront(shirtCenter(.79)+s*.36,.79)+.03),D=V(shirtCenter(.85)+s*.025,.85,shirtFront(shirtCenter(.85)+s*.025,.85)+.025);const top=A.clone().lerp(B,u),bottom=D.clone().lerp(C,u);const p=top.lerp(bottom,v);p.z+=.066*Math.sin(PI*u)*Math.sin(PI*v)+.039*Math.sin(PI*v)*(1-u);return p;}
- for(const s of[-1,1]){const p=[],idx=[],uv=[];const n=40,m=30;for(let j=0;j<=m;j++)for(let i=0;i<=n;i++){const q=collarPoint(s,i/n,j/m);p.push(q.x,q.y,q.z);uv.push(i/n,j/m);if(j<m&&i<n){const k=j*(n+1)+i;if(s===1)idx.push(k,k+n+1,k+1,k+1,k+n+1,k+n+2);else idx.push(k,k+1,k+n+1,k+1,k+n+2,k+n+1);}}mesh(makeGeometry(p,idx,uv),white,root,'Folded collar wing '+s);const edge=[];for(let i=0;i<=24;i++)edge.push(collarPoint(s,i/24,1));line(root,'Collar rolled hem '+s,edge,.0023,white,28,5);const seam=[];for(let i=0;i<=24;i++)seam.push(collarPoint(s,i/24,.984).add(V(0,0,.001)));line(root,'Collar fine stitching '+s,seam,.0008,stitch,28,4);}
- // Raised central button placket follows the blouse surface all the way down the crop.
- const placketX=shirtCenter;
- {const p=[],idx=[],uv=[];const nx=16,ny=96;for(let j=0;j<=ny;j++){const y=mix(-.43,.855,j/ny),cx=placketX(y);for(let i=0;i<=nx;i++){const t=i/nx,x=cx+(t-.5)*.14;let z=shirtFront(x,y)+.009+.009*Math.sin(PI*t);p.push(x,y,z);uv.push(t,j/ny);if(j<ny&&i<nx){const k=j*(nx+1)+i;idx.push(k,k+1,k+nx+1,k+1,k+nx+2,k+nx+1);}}}mesh(makeGeometry(p,idx,uv),white,root,'Raised curved button placket');}
- for(const s of[-1,1]){let pts=[];for(let i=0;i<=70;i++){const y=mix(-.425,.85,i/70),x=placketX(y)+s*.066;pts.push([x,y,shirtFront(x,y)+.011]);}line(root,'Placket stitching '+s,pts,.0011,stitch,75,4);}
- for(const y of[.69,.24,-.23]){const x=placketX(y),z=shirtFront(x,y)+.030;ball(root,'Pearlescent shirt button',buttonMat,[x,y,z],[.030,.030,.009],36);const rim=mesh(new THREE.TorusGeometry(.024,.0021,7,36),buttonMat,root,'Raised button rim');rim.position.set(x,y,z+.0065);for(const dx of[-.006,.006])for(const dy of[-.006,.006])ball(root,'Button stitch hole',stitch,[x+dx,y+dy,z+.0092],[.0025,.0025,.0008],12);line(root,'Crossed button thread',[[x-.006,y-.006,z+.01],[x+.006,y+.006,z+.011]],.0009,white,2,4);}
- // Finish the lower crop with a closed, understated cut surface.
- const cap=mesh(new THREE.CylinderGeometry(.81,.81,.012,90,1,false),white,root,'Finished lower torso crop');cap.position.set(0,-.434,0);cap.scale.z=.456;
- root.userData={author:'GPT-6 Astra Pro',tools:'Three.js / WebGL / JavaScript / Headless Chrome',source:'All visual assets procedurally authored in src/model.js',seed:220901};
+ const groomStats=buildGroom({parent:hairGroup,skinMaterial:skinPlain,mobile,headWidth,faceZ,backDepth});
+ // Tailored blouse is a separately batched collection of original sewn panels.
+ const blouse=buildBlouse(root,{mobile});
+ root.userData={author:'GPT-6 Astra Pro',tools:'Three.js / WebGL / JavaScript / Headless Chrome',source:'Original procedural geometry and maps in src/model.js, face-surface.js, groom.js, garment.js and surfaces.js',seed:220901};
 
 
- for(const side of[-1,1]){const cap=mesh(new THREE.CircleGeometry(1,64),white,root,'Closed sleeve crop '+side);cap.rotation.x=PI/2;cap.position.set(side*.925,-.440,-.025);cap.scale.set(.193,.215,1);}
- function bakeAndWarp(o,hair=false,body=false){o.updateMatrix();o.geometry.applyMatrix4(o.matrix);o.position.set(0,0,0);o.quaternion.identity();o.scale.set(1,1,1);o.updateMatrix();const a=o.geometry.getAttribute('position');for(let i=0;i<a.count;i++){let x=a.getX(i),y=a.getY(i);if(body)y-=.12*(1-THREE.MathUtils.smoothstep(y,-.44,-.30));else y-=.07*(1-THREE.MathUtils.smoothstep(y,2.13,2.43));if(hair){x*=1.05;y+=.08*THREE.MathUtils.smoothstep(y,3.1,3.5);}a.setXY(i,x,y);}a.needsUpdate=true;if(!o.name.includes("Individually swept"))o.geometry.computeVertexNormals();}
+ function bakeAndWarp(o,hair=false,body=false){o.updateMatrix();o.geometry.applyMatrix4(o.matrix);o.position.set(0,0,0);o.quaternion.identity();o.scale.set(1,1,1);o.updateMatrix();const a=o.geometry.getAttribute('position');for(let i=0;i<a.count;i++){let x=a.getX(i),y=a.getY(i);if(body)y-=.12*(1-THREE.MathUtils.smoothstep(y,-.44,-.30));else y-=.07*(1-THREE.MathUtils.smoothstep(y,2.13,2.43));a.setXY(i,x,y);}a.needsUpdate=true;if(!hair&&!o.name.includes("Continuous facial sculpt"))o.geometry.computeVertexNormals();}
  head.traverse(o=>{if(o.isMesh)bakeAndWarp(o,o.parent===hairGroup,false);});
  for(const o of root.children)if(o.isMesh)bakeAndWarp(o,false,true);
  // Consolidate meshes by material inside each transform/layer group to keep mobile draw calls low.
@@ -233,5 +124,5 @@ export function buildPortrait({mobile=false}={}){
  for(const o of root.children)if(o.isMesh)o.scale.x=1.27;
  const originalMaterials=new Map();root.traverse(o=>{if(o.isMesh)originalMaterials.set(o,o.material);});
  const clayMat=new THREE.MeshStandardMaterial({color:'#bda18d',roughness:.85,side:THREE.DoubleSide});
- return {root,hairGroup,originalMaterials,clayMat,stats:{fineHairStrands:strandCount+372+scalpFibers+frontGuides.length*(mobile?48:80),solidHairLocks:122+frontGuides.length+bangs.length,seed:220901},setClay(on){root.traverse(o=>{if(o.isMesh)o.material=on?clayMat:originalMaterials.get(o);});},setWire(on){const mats=new Set();root.traverse(o=>{if(o.isMesh)mats.add(o.material);});for(const m of mats)m.wireframe=on;}};
+ return {root,hairGroup,originalMaterials,clayMat,stats:{...groomStats,seed:220901},setClay(on){root.traverse(o=>{if(o.isMesh)o.material=on?clayMat:originalMaterials.get(o);});},setWire(on){const mats=new Set();root.traverse(o=>{if(o.isMesh)mats.add(o.material);});for(const m of mats)m.wireframe=on;}};
 }

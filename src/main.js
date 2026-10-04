@@ -19,21 +19,21 @@ function setView(name){const p=presets[name]||presets.portrait;activeView=name;c
 async function init(){
  try{
   renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true,powerPreference:'high-performance'});
-  renderer.setPixelRatio(params.has('capture')?1:Math.min(devicePixelRatio,mobile?1.5:1.75));renderer.setClearColor(0x000000,0);
+  renderer.setPixelRatio(params.has('capture')?1.5:Math.min(Math.max(1.25,devicePixelRatio),mobile?1.5:1.75));renderer.setClearColor(0x000000,0);
   renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1;
-  renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.shadowMap.autoUpdate=false;renderer.shadowMap.needsUpdate=true;
+  renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;renderer.shadowMap.autoUpdate=false;renderer.shadowMap.needsUpdate=true;
   host.appendChild(renderer.domElement);renderer.domElement.setAttribute('aria-label','Interactive original 3D upper-body portrait. Drag to rotate.');
-  scene=new THREE.Scene();const studioEnvironment=createStudioEnvironment(renderer);scene.environment=studioEnvironment.texture;scene.environmentIntensity=.18;camera=new THREE.PerspectiveCamera(32,1,.1,50);
-  controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.10;controls.enablePan=false;controls.minDistance=2.2;controls.maxDistance=13;controls.minPolarAngle=.25;controls.maxPolarAngle=2.72;controls.autoRotateSpeed=.48;controls.addEventListener('change',invalidate);
+  scene=new THREE.Scene();const studioEnvironment=createStudioEnvironment(renderer);scene.environment=studioEnvironment.texture;scene.environmentIntensity=.24;camera=new THREE.PerspectiveCamera(32,1,.1,50);
+  controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=!params.has("capture");controls.dampingFactor=.10;controls.enablePan=false;controls.minDistance=2.2;controls.maxDistance=13;controls.minPolarAngle=.25;controls.maxPolarAngle=2.72;controls.autoRotateSpeed=.48;controls.addEventListener('change',invalidate);
   // Procedural studio lighting: no HDRI/environment/image assets.
-  scene.add(new THREE.HemisphereLight('#fff2e6','#665a65',.50));
+  scene.add(new THREE.HemisphereLight('#fff2e6','#b48e83',.60));
   scene.add(new THREE.AmbientLight('#f6d9c9',.04));
   RectAreaLightUniformsLib.init();
   function area(color,intensity,x,y,z,w,h,tx=0,ty=2,tz=0){const l=new THREE.RectAreaLight(color,intensity,w,h);l.position.set(x,y,z);l.lookAt(tx,ty,tz);scene.add(l);return l;}
-  area('#fff5ef',3.15,-3.5,4.6,4,3.4,5);
-  area('#e3e9ff',1.05,3.5,3.1,2.5,3,4);
+  area('#fff5ef',3.5,-3.5,4.6,4,3.4,5);
+  area('#e3e9ff',1.55,3.5,3.1,2.5,3,4);
   area('#f0d5c3',3.2,1.5,4.2,-2.2,2.2,3.5);
-  const key=new THREE.DirectionalLight('#fff4ed',1.10);key.position.set(-3,4.9,4.7);key.castShadow=true;key.shadow.mapSize.set(mobile?1024:2048,mobile?1024:2048);Object.assign(key.shadow.camera,{left:-3,right:3,top:4,bottom:-2,near:.5,far:15});key.shadow.bias=-.00012;key.shadow.normalBias=.007;key.shadow.radius=3;key.target.position.set(0,2,0);scene.add(key,key.target);
+  const key=new THREE.DirectionalLight('#fff4ed',.68);key.position.set(-3,4.9,4.7);key.castShadow=true;key.shadow.mapSize.set(mobile?1024:2048,mobile?1024:2048);Object.assign(key.shadow.camera,{left:-3,right:3,top:4,bottom:-2,near:.5,far:15});key.shadow.bias=-.00012;key.shadow.normalBias=.007;key.shadow.radius=6;key.target.position.set(0,2,0);scene.add(key,key.target);
   portrait=buildPortrait({mobile});scene.add(portrait.root);
   new ResizeObserver(()=>{const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();invalidate();}).observe(host);
   setView(params.get('view')||'portrait');
