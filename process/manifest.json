@@ -1,9 +1,51 @@
 {
-  "revision": "2026-10-04T18:57:04.265071+00:00",
-  "score": 77,
-  "iterations": 20,
-  "note": "Review 20: 77/100. Rebuilt eyebrow growth, stabilized the orbital transition, refined the nose and lip proportions, and restored a neutral hair color. Geometry checks pass. The eyelid margins, uniform groom and cloth shading still prevent a high-fidelity likeness score. Scores are manual visual judgments, not measured similarity.",
+  "revision": "2026-10-04T20:29:51.681747+00:00",
+  "score": 81,
+  "iterations": 26,
+  "note": "Review 26: 81/100. The detached fringe roots are hidden and individual fibers now end at varied lengths. Eye sockets are shallower, though lower eyelid transitions remain too raised. Side view is coherent; skin, tailoring and hair flow are still stylized rather than reference-level realism. Scores are manual visual judgments, not measured similarity.",
   "reviews": [
+    {
+      "title": "26 \u00b7 Hidden fringe roots and embedded optical eyes",
+      "score": 81,
+      "image": "process/iteration-26-portrait.png",
+      "note": "The detached fringe roots are hidden and individual fibers now end at varied lengths. Eye sockets are shallower, though lower eyelid transitions remain too raised. Side view is coherent; skin, tailoring and hair flow are still stylized rather than reference-level realism.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-26-portrait.png"
+    },
+    {
+      "title": "25 \u00b7 Continuous crown without exposed scalp gaps",
+      "score": 80,
+      "image": "process/iteration-25-portrait.png",
+      "note": "The crown gaps and bright part seam are removed, and front tips are layered. Rear continuity is preserved. Close-up still shows overly deep inner eye sockets, geometric fringe roots and simplified skin.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-25-portrait.png"
+    },
+    {
+      "title": "24 \u00b7 Rear continuity and softer facial relief",
+      "score": 78,
+      "image": "process/iteration-24-portrait.png",
+      "note": "The rear gap is closed and the nasal transition is softer. Portrait and detail still expose crown triangles, a bright scalp seam, rigid fringe, and simplified skin. Four views rendered without browser errors.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-24-portrait.png"
+    },
+    {
+      "title": "23 \u00b7 Recovered continuation: crown gaps remain",
+      "score": 77,
+      "image": "process/iteration-23-portrait.png",
+      "note": "Reviewed portrait, left and back. Facial placement improved, but root gaps, a rear seam, overly uniform hair and flat skin remain. This is not the target quality.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-23-portrait.png"
+    },
+    {
+      "title": "22 \u00b7 Volumetric highlights \u2014 root-strip regression",
+      "score": 77,
+      "image": "process/iteration-22-portrait.png",
+      "note": "Added view-responsive fiber highlights and varied volumetric locks. The reflection test exposes triangular root-strip artifacts and an overly bright part line, so this pass is not accepted as final.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-22-portrait.png"
+    },
+    {
+      "title": "21 \u00b7 Dimensional eyelids and embedded eyes",
+      "score": 78,
+      "image": "process/iteration-21-portrait.png",
+      "note": "Added rounded skin margins, contact-shaded ocular surfaces and varied tapered eyelashes. The eyes sit more convincingly in the face; the upper lashes are too reflective, and the crown remains too uniformly combed.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-21-portrait.png"
+    },
     {
       "title": "20 \u00b7 Smoother anatomy and neutral dark-brown fibers",
       "score": 77,
@@ -145,5 +187,31 @@
       "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-01-portrait.png"
     }
   ],
-  "artifacts": []
+  "artifacts": [
+    {
+      "label": "Portrait \u2014 latest reviewed render",
+      "url": "process/iteration-26-portrait.png",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-26-portrait.png"
+    },
+    {
+      "label": "Face detail \u2014 latest reviewed render",
+      "url": "process/iteration-26-detail.png",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-26-detail.png"
+    },
+    {
+      "label": "Left three-quarter \u2014 latest reviewed render",
+      "url": "process/iteration-26-left.png",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-26-left.png"
+    },
+    {
+      "label": "Rear view \u2014 reviewed crown continuity",
+      "url": "process/iteration-25-back.png",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-25-back.png"
+    },
+    {
+      "label": "Chrome render report \u2014 pass 26",
+      "url": "process/test-26.json",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/test-26.json"
+    }
+  ]
 }
