@@ -13,7 +13,7 @@ let activeFaceZ=null;
 function clearScalp(p){if(activeFaceZ&&p.z>0&&p.y>2.65&&p.y<3.47&&Math.abs(p.x)<.575){p.z=Math.max(p.z,activeFaceZ(p.x,p.y)+.027);}return p;}
 const headTilt=fit.roll,cosTilt=Math.cos(headTilt),sinTilt=Math.sin(headTilt);
 function scalpNormal(p){return V(p.x/(RX*RX),(p.y-CY)/(RY*RY),p.z/(RZ*RZ)).normalize();}
-function partPoint(u,side){const x=.075+.018*Math.sin(PI*u)+side*.0035,z=mix(-.49,.587,u),q=Math.sqrt(Math.max(.001,1-(x/RX)**2-(z/RZ)**2));return V(x,CY+RY*q,z);}
+function partPoint(u,side){const x=.075+.018*Math.sin(PI*u)+side*-.0015,z=mix(-.49,.587,u),q=Math.sqrt(Math.max(.001,1-(x/RX)**2-(z/RZ)**2));return V(x,CY+RY*q,z);}
 function endAngle(side,u){return side*mix(PI,side<0?1.14:.87,Math.pow(u,.86));}
 function rootPoint(side,u,t){
  const root=partPoint(u,side),a=endAngle(side,u),yEnd=2.54+.15*smooth(u,.20,1),qY=(yEnd-CY)/RY,qR=Math.sqrt(1-qY*qY);
@@ -49,7 +49,7 @@ const rows=[
 ];
 function makeGuide(side,u){
  const roots=[];for(let i=0;i<=42;i++)roots.push(rootPoint(side,u,i/42));
- const end=roots.at(-1),backTip=-.275+.17*Math.sin(endAngle(side,u))**2,frontTip=-.235-.10*smooth(u,.73,1)+.022*Math.sin(u*31+side),front=smooth(u,.42,.76),tipY=mix(backTip,frontTip,front);
+ const end=roots.at(-1),backTip=-.275+.17*Math.sin(endAngle(side,u))**2,frontTip=-.165-.15*smooth(u,.73,1)+.062*Math.sin(u*31+side),front=smooth(u,.42,.76),tipY=mix(backTip,frontTip,front);
  const body=[roots.at(-3),end,...rows.map(([y,...row])=>bodyPoint(side,u,y,row)),bodyPoint(side,u,tipY,[.70,.51,.571,.271,.491,.405,.51])];
  const lower=new THREE.CatmullRomCurve3(body,false,'centripetal'),lowerPoints=[];
  for(let i=0;i<=180;i++){const t=mix(1/(body.length-1),1,i/180);lowerPoints.push(lower.getPoint(t));}
@@ -63,7 +63,7 @@ function normalField(side,u){
 function cuticleMask(){
  const w=512,h=1024,d=new Uint8Array(w*h*4);
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
-  const u=x/(w-1),v=y/(h-1),tip=.965+.030*hash(Math.floor(x*2.2),9),front=.971+.014*Math.sin(v*137)+.008*Math.sin(v*353),a=(1-smooth(v,tip-.009,tip))*(1-smooth(u,front-.011,front)),k=(y*w+x)*4;
+  const u=x/(w-1),v=y/(h-1),tip=.965+.030*hash(Math.floor(x*2.2),9),front=.9995+.0003*Math.sin(v*137),a=(1-smooth(v,tip-.009,tip))*(1-smooth(u,front-.001,front)),k=(y*w+x)*4;
   d[k]=d[k+1]=d[k+2]=255;d[k+3]=Math.round(a*255);
  }
  const t=new THREE.DataTexture(d,w,h);t.channel=1;t.colorSpace=THREE.SRGBColorSpace;t.generateMipmaps=true;t.minFilter=THREE.LinearMipmapLinearFilter;t.needsUpdate=true;return t;
@@ -78,12 +78,12 @@ export function buildGroom({parent,skinMaterial,mobile=false,faceZ}){
  const fineMat=new THREE.MeshPhysicalMaterial({color:'#ffffff',vertexColors:true,roughness:.43,anisotropy:.92,anisotropyRotation:PI/2,specularIntensity:.58,side:THREE.DoubleSide});
  applyHairShading(coreMat,{strength:.26});applyHairShading(cardMat,{strength:.27});applyHairShading(fineMat,{strength:.26});
  function clumpGuide(base,field,id){
-  const points=[],phase=hash(id,713)*TAU,end=.958+.042*hash(id,617);
+  const points=[],phase=hash(id,713)*TAU,end=.89+.11*hash(id,617);
   for(let i=0;i<=150;i++){
    const t=i/150,q=t*end,p=base.getPoint(q),T=base.getTangent(q).normalize(),N=field(q,p),S=T.clone().cross(N).normalize(),rootFade=smooth(t,.015,.20),lower=1-smooth(p.y,1.35,2.72);
    const lift=(.003+.011*hash(id,923)+.005*Math.sin(t*13+phase))*rootFade;
-   const lateral=(.005*Math.sin(t*19+phase)+lower*.017*Math.sin(t*15+phase*2))*rootFade;
-   p.addScaledVector(N,lift+lower*.008*Math.sin(t*21+phase)).addScaledVector(S,lateral);points.push(p);
+   const lateral=(.005*Math.sin(t*19+phase)+lower*.031*Math.sin(t*15+phase*2))*rootFade;
+   p.addScaledVector(N,lift+lower*.015*Math.sin(t*21+phase)).addScaledVector(S,lateral);points.push(p);
   }
   const spline=new THREE.CatmullRomCurve3(points,false,'centripetal');spline.arcLengthDivisions=380;spline.updateArcLengths();const curve=new THREE.Curve();curve.getPoint=t=>spline.getPointAt(t);curve.getTangent=t=>spline.getTangentAt(t);return curve;
  }
@@ -97,6 +97,19 @@ export function buildGroom({parent,skinMaterial,mobile=false,faceZ}){
    if(j<nt&&i<nu){const k=j*(nu+1)+i;if(side>0)b.idx.push(k,k+1,k+nu+1,k+1,k+nu+2,k+nu+1);else b.idx.push(k,k+nu+1,k+1,k+1,k+nu+1,k+nu+2);}
   }
   const under=finish(b,baseMat,parent,'Continuous scalp-to-tip hair underlayer '+side);under.geometry.setAttribute('uv1',new THREE.Float32BufferAttribute(uv1,2));
+ }
+ // Original root-only scalp sheets fill the crown continuously before the long guide family.
+ // This support uses scalp coordinates directly, avoiding normalized-length foldovers near the part.
+ for(const side of[-1,1]){
+  const b=builder(),nu=100,nt=70;
+  for(let j=0;j<=nt;j++)for(let i=0;i<=nu;i++){
+   const u=i/nu,t=j/nt,p=rootPoint(side,u,t);p.addScaledVector(scalpNormal(p),-.003);
+   b.p.push(p.x,p.y,p.z);b.uv.push(u*9,t*.27);
+   const c=new THREE.Color('#292022').multiplyScalar(.94+.035*Math.sin(u*117));b.color.push(c.r,c.g,c.b);
+   if(j<nt&&i<nu){const k=j*(nu+1)+i;if(side>0)b.idx.push(k,k+1,k+nu+1,k+1,k+nu+2,k+nu+1);else b.idx.push(k,k+nu+1,k+1,k+1,k+nu+1,k+nu+2);}
+  }
+  const scalpMat=coreMat.clone();scalpMat.side=THREE.DoubleSide;scalpMat.roughness=.78;
+  finish(b,scalpMat,parent,'Continuous root-coordinate crown support '+side,false);
  }
  // Close the narrow central rear seam; the forehead side intentionally remains open.
  {
@@ -130,6 +143,11 @@ export function buildGroom({parent,skinMaterial,mobile=false,faceZ}){
   addFine(curve,field,mobile?30:40,width*.92,id);
   if(i%2===0)addFine(curve,field,3,width*1.7,id+7401,true);
  }
+ for(const side of[-1,1])for(let k=0;k<90;k++){
+  const u=(k+.33)/90,points=[];for(let j=0;j<=48;j++)points.push(rootPoint(side,u,j/48));
+  const curve=new THREE.CatmullRomCurve3(points,false,'centripetal');
+  addFine(curve,(t,p)=>scalpNormal(p),mobile?5:8,.006,82000+(side+1)*500+k);
+ }
  // Separate tapered hairline wisps feather the front edge into visible skin.
  for(const side of[-1,1])for(let i=0;i<38;i++){
   const r=hash(i,side),points=[];
@@ -142,7 +160,7 @@ export function buildGroom({parent,skinMaterial,mobile=false,faceZ}){
   ribbon(fine,curve,.00030+.00038*r,0,field,new THREE.Color('#48372d').multiplyScalar(.7+.3*r),{segments:66,across:1,offset:.009,tip:.9,endStart:.6});strandCount++;
  }
  // A fine scalp-colored part is visible below the growing roots, not a hard central seam.
- if(skinMaterial){
+ if(false&&skinMaterial){
   const points=[];for(let i=0;i<=80;i++){const p=partPoint(.06+.87*i/80,1);p.x-=.0035;p.addScaledVector(scalpNormal(p),-.012);points.push(p);}
   const m=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points),100,.0008,5,false),new THREE.MeshStandardMaterial({color:'#49342f',roughness:.85}));m.name='Subtle visible scalp part';m.castShadow=false;parent.add(m);
  }
