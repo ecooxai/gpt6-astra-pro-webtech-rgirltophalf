@@ -1,9 +1,58 @@
 {
-  "revision": "2026-10-04T11:55:58.986132+00:00",
-  "score": 68,
-  "iterations": 8,
-  "note": "Review 8: 68/100. Softer facial transitions and asymmetric fringe. Photorealistic skin and hair still need substantial refinement. Scores are manual visual judgments, not measured similarity.",
+  "revision": "2026-10-04T17:58:33.046059+00:00",
+  "score": 74,
+  "iterations": 15,
+  "note": "Review 15: 74/100. Rebuilt the blouse with rounded set-in sleeves, a thick rolled collar, woven surface detail and conforming stitched placket. The hair-root bands and overall facial realism remain below the target. Scores are manual visual judgments, not measured similarity.",
   "reviews": [
+    {
+      "title": "15 \u00b7 Rounded tailoring and sewn collar",
+      "score": 74,
+      "image": "process/iteration-15-portrait.png",
+      "note": "Rebuilt the blouse with rounded set-in sleeves, a thick rolled collar, woven surface detail and conforming stitched placket. The hair-root bands and overall facial realism remain below the target.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-15-portrait.png"
+    },
+    {
+      "title": "14 \u00b7 Hair volume and ear visibility",
+      "score": 72,
+      "image": "process/iteration-14-portrait.png",
+      "note": "Restored the tucked-ear silhouette, filled the chest-length hair masses, and improved strand antialiasing. Broad root bands remain visibly artificial; the blouse is still the older angular version.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-14-portrait.png"
+    },
+    {
+      "title": "13 \u00b7 Groom trial \u2014 scalp intersection regression",
+      "score": 68,
+      "image": "process/iteration-13-portrait.png",
+      "note": "Facial normals and lip edges are smoother. The new groom exposes scalp intersections and undersized front masses; this trial is not accepted as the final hairstyle.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-13-portrait.png"
+    },
+    {
+      "title": "12 \u00b7 Continuous facial surface",
+      "score": 70,
+      "image": "process/iteration-12-portrait.png",
+      "note": "Rebuilt the face with exact eye openings and embedded nasal and lip relief. Removed visible orbital patches; hair, collar, skin response, and eyelid micro-shading still need work.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-12-portrait.png"
+    },
+    {
+      "title": "11 \u00b7 Lighting correction, unresolved anatomy",
+      "score": 66,
+      "image": "process/iteration-11-portrait.png",
+      "note": "Reviewed the saved continuation render. Skin contrast improved, but rectangular eye gaps, orbital seams, stiff hair and angular cloth remain.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-11-portrait.png"
+    },
+    {
+      "title": "10 \u00b7 Surface and lighting regression",
+      "score": 66,
+      "image": "process/iteration-10-portrait.png",
+      "note": "Added procedural skin normals and denser hair, but excessive environment fill washed out facial contrast. That lighting regression is being corrected.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-10-portrait.png"
+    },
+    {
+      "title": "09 \u00b7 Portrait proportions",
+      "score": 69,
+      "image": "process/iteration-09-portrait.png",
+      "note": "Better lower-face length, crown volume, and shoulder width. The dominant remaining gaps are skin response, hair-root flow, and collar placement.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-09-portrait.png"
+    },
     {
       "title": "08 \u00b7 Soft tissue and fringe",
       "score": 68,

@@ -1,0 +1,20 @@
+{
+  "iteration": "09",
+  "views": [
+    "portrait",
+    "detail",
+    "left",
+    "back"
+  ],
+  "errors": [],
+  "stats": {
+    "triangles": 648058,
+    "drawCalls": 27,
+    "geometries": 27,
+    "textures": 8,
+    "fineHairStrands": 2888,
+    "solidHairLocks": 196,
+    "seed": 220901
+  },
+  "time": "2026-10-04T12:11:15.600Z"
+}
