@@ -16,7 +16,7 @@ export function buildEar(parent,side,baseMaterial){
   const color=new THREE.Color('#ebbdab');if(!back)color.lerp(new THREE.Color('#ba7567'),.29*bowl+.10*G(r-.72,.06));
   else color.lerp(new THREE.Color('#ce927d'),.16);
   col.push(color.r,color.g,color.b);
-  if(j<nr&&i<na){const k=back*(nr+1)*(na+1)+j*(na+1)+i;let tri=[k,k+1,k+na+1,k+1,k+na+2,k+na+1];if((side<0)!==Boolean(back))tri=[k,k+na+1,k+1,k+1,k+na+1,k+na+2];idx.push(...tri);}
+  if(j<nr&&i<na){const k=back*(nr+1)*(na+1)+j*(na+1)+i;let tri=[k,k+1,k+na+1,k+1,k+na+2,k+na+1];if((side>0)!==Boolean(back))tri=[k,k+na+1,k+1,k+1,k+na+1,k+na+2];idx.push(...tri);}
  }
  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(p,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setAttribute('color',new THREE.Float32BufferAttribute(col,3));geo.setIndex(idx);geo.computeVertexNormals();
  const ear=new THREE.Mesh(geo,material);ear.name='Continuous sculpted ear '+side;ear.castShadow=ear.receiveShadow=true;parent.add(ear);return ear;

@@ -1,9 +1,16 @@
 {
-  "revision": "2026-10-04T17:58:33.046059+00:00",
-  "score": 74,
-  "iterations": 15,
-  "note": "Review 15: 74/100. Rebuilt the blouse with rounded set-in sleeves, a thick rolled collar, woven surface detail and conforming stitched placket. The hair-root bands and overall facial realism remain below the target. Scores are manual visual judgments, not measured similarity.",
+  "revision": "2026-10-04T18:10:46.554420+00:00",
+  "score": 75,
+  "iterations": 16,
+  "note": "Review 16: 75/100. Darkened the hair toward the reference and replaced layered ear tubes with continuous sculpted volumes. Root strips still read as separate bands; a new continuous root-flow surface is needed. Scores are manual visual judgments, not measured similarity.",
   "reviews": [
+    {
+      "title": "16 \u00b7 Darker groom and continuous ear anatomy",
+      "score": 75,
+      "image": "process/iteration-16-portrait.png",
+      "note": "Darkened the hair toward the reference and replaced layered ear tubes with continuous sculpted volumes. Root strips still read as separate bands; a new continuous root-flow surface is needed.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-16-portrait.png"
+    },
     {
       "title": "15 \u00b7 Rounded tailoring and sewn collar",
       "score": 74,

@@ -6,6 +6,7 @@
 import * as THREE from 'three';
 import { buildGroom } from './groom.js';
 import { buildBlouse } from './garment.js';
+import { buildEar } from './ear.js';
 import { buildContinuousFace, eyeEdge, eyeSurface, eyeY, eyeX, eyeW } from './face-surface.js';
 import { skinMicrostructure, hairSurfaceMaps, hairlineMask, scleraPigment } from './surfaces.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
@@ -60,15 +61,9 @@ export function buildPortrait({mobile=false}={}){
   for(let j=0;j<=ny;j++){const y=mix(.81,1.91,j/ny);for(let i=0;i<=na;i++){const a=TAU*i/na;const x=interp(rows,y,1)*Math.sin(a)-.033*(y-1.1),z=interp(rows,y,2)*Math.cos(a)+.012;const tendon=.01*g(Math.abs(x)-.14,.04)*g(y-1.4,.3)*Math.max(0,Math.cos(a));p.push(x,y,z+tendon);uv.push(i/na,j/ny);if(j<ny&&i<na){let k=j*(na+1)+i;idx.push(k,k+1,k+na+1,k+1,k+na+2,k+na+1);}}}
   const ng=makeGeometry(p,idx,uv);mesh(ng,skinPlain,root,'Sculpted neck and clavicle transition');
  }
- // Ears with helix, concha, antihelix and tragus, visible from side views.
- for(const s of[-1,1]){
-  ball(head,'Ear pinna '+s,skinPlain,[s*.538,2.435,.004],[.10,.206,.090]);
-  ball(head,'Ear concha '+s,innerEar,[s*.575,2.435,.071],[.046,.124,.030]);
-  let pts=[];for(let i=0;i<=40;i++){const a=TAU*i/40;pts.push([s*(.552+.063*Math.cos(a)),2.448+.176*Math.sin(a),.078+.014*Math.cos(a)]);}line(head,'Rolled ear helix '+s,pts,.012,skinPlain,64,7);
-  line(head,'Ear antihelix '+s,[[s*.55,2.315,.10],[s*.57,2.37,.119],[s*.548,2.465,.114],[s*.57,2.535,.103]],.009,skinPlain,28,7);
-  ball(head,'Tragus '+s,skinPlain,[s*.51,2.423,.104],[.018,.040,.024]);
- }
- const sclera=new THREE.MeshPhysicalMaterial({color:'#e8e1dc',map:scleraPigment(),roughness:.20,specularIntensity:.4});
+ // Both ears are continuous sculpted volumes, not stacked torus primitives.
+ for(const side of[-1,1])buildEar(head,side,skinPlain);
+ const sclera=new THREE.MeshPhysicalMaterial({color:'#d7c9c2',map:scleraPigment(),roughness:.20,specularIntensity:.4});
  const rimMat=new THREE.MeshPhysicalMaterial({color:'#c8897a',roughness:.36,specularIntensity:.32});
  const irisMat=new THREE.MeshPhysicalMaterial({map:irisTexture(),roughness:.65,specularIntensity:.13});
  const pupilMat=new THREE.MeshPhysicalMaterial({color:'#130f10',roughness:.08,specularIntensity:.65});
@@ -78,7 +73,7 @@ export function buildPortrait({mobile=false}={}){
   const p=[],idx=[],uv=[];const nx=70,ny=20;
   for(let j=0;j<=ny;j++)for(let i=0;i<=nx;i++){const t=-1+2*i/nx,v=j/ny,lo=eyeEdge(s,t,false),hi=eyeEdge(s,t,true),x=lo.x,y=mix(lo.y,hi.y,v),z=eyeSurface(s,x,y);p.push(x,y,z);uv.push(i/nx,v);if(j<ny&&i<nx){const k=j*(nx+1)+i;idx.push(k,k+1,k+nx+1,k+1,k+nx+2,k+nx+1);}}
   mesh(makeGeometry(p,idx,uv),sclera,head,'Curved almond sclera '+s);
-  const ix=s*eyeX-.002,iy=eyeY+.001,iz=eyeSurface(s,ix,iy)+.002;
+  const ix=s*eyeX-.002,iy=eyeY+.007,iz=eyeSurface(s,ix,iy)+.002;
   // Convex radial iris with an individually synthesized radial-fiber texture.
   const ip=[ix,iy,iz+.003],iu=[.5,.5],ii=[];const nr=14,na=96,ir=.058;
   for(let r=1;r<=nr;r++)for(let a=0;a<=na;a++){const rr=ir*r/nr,an=TAU*a/na;ip.push(ix+rr*Math.cos(an),iy+rr*Math.sin(an),iz+.003-.012*Math.pow(r/nr,2));iu.push(.5+.5*r/nr*Math.cos(an),.5+.5*r/nr*Math.sin(an));}
@@ -97,14 +92,14 @@ export function buildPortrait({mobile=false}={}){
   for(const upper of[true,false]){
    let edgePts=[];for(let i=0;i<=55;i++){const t=-.99+1.98*i/55,e=eyeEdge(s,t,upper);e.z+=.0015;edgePts.push(e);}line(head,'Wet eyelid margin '+s+' '+upper,edgePts,upper?.0020:.0012,upper?lashMat:rimMat,60,5);
   }
-  for(let i=0;i<32;i++){const t=-.95+1.9*(i+.2*rnd())/32,e=eyeEdge(s,t,true);e.z+=.003;const L=.012+.011*Math.pow((s*t+1)/2,1.5);line(head,'Upper eyelash '+s+' '+i,[e,e.clone().add(V(s*.004,L*.35,.009)),e.clone().add(V(s*(.007+.006*rnd()),L*.65,.016))],.0009+(.0004*rnd()),lashMat,7,4);}
+  for(let i=0;i<32;i++){const t=-.95+1.9*(i+.2*rnd())/32,e=eyeEdge(s,t,true);e.z+=.003;const L=.012+.011*Math.pow((s*t+1)/2,1.5);line(head,'Upper eyelash '+s+' '+i,[e,e.clone().add(V(s*.004,L*.35,.009)),e.clone().add(V(s*(.007+.006*rnd()),L*.65,.016))],.00062+(.00024*rnd()),lashMat,7,4);}
   for(let i=0;i<14;i++){const t=-.78+1.63*i/14,e=eyeEdge(s,t,false);line(head,'Fine lower eyelash '+s+' '+i,[e,e.clone().add(V(s*.003,-.008,.008)),e.clone().add(V(s*.006,-.012-.004*rnd(),.010))],.00032,lashMat,5,3);}
   // Small tear duct integrated at the nasal corner.
   const inner=eyeEdge(s,-s*.965,false);ball(head,'Lacrimal corner '+s,rimMat,[inner.x,inner.y+.006,inner.z],[.011,.01,.005],20);
   // Eyebrow base is subdued; individual growing hairs define its upper silhouette.
   let browPts=[];for(let i=0;i<=30;i++){let t=i/30,x=s*(.098+.307*t),y=2.548+.026*Math.sin(PI*t*.92)-.026*t;browPts.push([x,y,faceZ(x,y)+.004]);}
-  line(head,'Soft brow foundation '+s,browPts,.007,browBase,40,5);
-  for(let i=0;i<128;i++){let t=(i+rnd())/128,x=s*(.10+.303*t),y=2.545+.026*Math.sin(PI*t*.92)-.026*t+(rnd()-.5)*.023,zz=faceZ(x,y)+.013;let l=.015*(1-.7*t)+rnd()*.008;line(head,'Brow hair '+s+' '+i,[[x,y,zz],[x+s*.006,y+l*.66,zz+.001],[x+s*(.007+t*.013),y+l,faceZ(x+s*.01,y+l)+.012]],.00045+(.00025*rnd()),browMat,5,3);}
+  line(head,'Soft brow foundation '+s,browPts,.008,browBase,40,5);
+  for(let i=0;i<190;i++){let t=(i+rnd())/190,x=s*(.10+.303*t),y=2.545+.026*Math.sin(PI*t*.92)-.026*t+(rnd()-.5)*.023,zz=faceZ(x,y)+.013;let l=.015*(1-.7*t)+rnd()*.008;line(head,'Brow hair '+s+' '+i,[[x,y,zz],[x+s*.006,y+l*.66,zz+.001],[x+s*(.007+t*.013),y+l,faceZ(x+s*.01,y+l)+.012]],.00045+(.00025*rnd()),browMat,5,3);}
  }
  const groomStats=buildGroom({parent:hairGroup,skinMaterial:skinPlain,mobile,headWidth,faceZ,backDepth});
  // Tailored blouse is a separately batched collection of original sewn panels.
