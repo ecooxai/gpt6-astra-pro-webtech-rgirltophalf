@@ -1,9 +1,23 @@
 {
-  "revision": "2026-10-04T12:34:11.430623+00:00",
-  "score": 66,
-  "iterations": 10,
-  "note": "Review 10: 66/100. Added procedural skin normals and denser hair, but excessive environment fill washed out facial contrast. That lighting regression is being corrected. Scores are manual visual judgments, not measured similarity.",
+  "revision": "2026-10-04T17:41:31.622292+00:00",
+  "score": 70,
+  "iterations": 12,
+  "note": "Review 12: 70/100. Rebuilt the face with exact eye openings and embedded nasal and lip relief. Removed visible orbital patches; hair, collar, skin response, and eyelid micro-shading still need work. Scores are manual visual judgments, not measured similarity.",
   "reviews": [
+    {
+      "title": "12 \u00b7 Continuous facial surface",
+      "score": 70,
+      "image": "process/iteration-12-portrait.png",
+      "note": "Rebuilt the face with exact eye openings and embedded nasal and lip relief. Removed visible orbital patches; hair, collar, skin response, and eyelid micro-shading still need work.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-12-portrait.png"
+    },
+    {
+      "title": "11 \u00b7 Lighting correction, unresolved anatomy",
+      "score": 66,
+      "image": "process/iteration-11-portrait.png",
+      "note": "Reviewed the saved continuation render. Skin contrast improved, but rectangular eye gaps, orbital seams, stiff hair and angular cloth remain.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-11-portrait.png"
+    },
     {
       "title": "10 \u00b7 Surface and lighting regression",
       "score": 66,
