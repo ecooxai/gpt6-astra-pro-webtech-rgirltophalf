@@ -9,13 +9,13 @@ page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
 await page.goto('http://127.0.0.1:48763/',{waitUntil:'networkidle',timeout:120000});
 await page.waitForFunction(()=>window.__portrait?.ready,null,{timeout:120000});
 await page.waitForTimeout(1400);
-await page.screenshot({path:project+'/public/process/iteration-01-studio.png'});
+await page.screenshot({path:project+'/public/process/iteration-02-studio.png'});
 console.log('STUDIO',JSON.stringify(await page.evaluate(()=>window.__portrait.stats())));
 await page.goto('http://127.0.0.1:48763/?capture=1',{waitUntil:'networkidle',timeout:120000});
 await page.setViewportSize({width:900,height:1350});
 await page.waitForFunction(()=>window.__portrait?.ready,null,{timeout:120000});await page.waitForTimeout(1700);
-await page.screenshot({path:project+'/public/process/iteration-01-portrait.png'});
+await page.screenshot({path:project+'/public/process/iteration-02-portrait.png'});
 console.log('PORTRAIT_CAPTURED');
-for(const view of ['left','back']){await page.evaluate(v=>window.__portrait.setView(v),view);await page.waitForTimeout(900);await page.screenshot({path:project+'/public/process/iteration-01-'+view+'.png'});console.log('CAPTURED',view);}
+for(const view of ['left','back']){await page.evaluate(v=>window.__portrait.setView(v),view);await page.waitForTimeout(900);await page.screenshot({path:project+'/public/process/iteration-02-'+view+'.png'});console.log('CAPTURED',view);}
 await fs.writeFile(project+'/public/process/test-report.json',JSON.stringify({date:new Date().toISOString(),errors,stats:await page.evaluate(()=>window.__portrait.stats())},null,2));
 await browser.close();if(errors.length){console.error('BROWSER_ERRORS',errors);process.exitCode=1;}else console.log('CHROME_RENDER_PASS_NO_ERRORS');

@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-04T11:07:10.298Z",
+  "errors": [],
+  "stats": {
+    "triangles": 617108,
+    "drawCalls": 27,
+    "geometries": 27,
+    "textures": 5,
+    "fineHairStrands": 3268,
+    "solidHairLocks": 122,
+    "seed": 220901
+  }
+}

@@ -11,16 +11,16 @@ const host=$('#canvas-host'),mobile=innerWidth<761;
 const toast=text=>{const e=$('#toast');e.textContent=text;e.style.opacity='1';setTimeout(()=>e.style.opacity='0',4500);};
 function download(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),60000);}
 let renderer,scene,camera,controls,portrait;
-let needsFrames=12,activeView='portrait',clay=false;
-const invalidate=()=>{needsFrames=Math.max(needsFrames,12);};
-const presets={portrait:{pos:[0,1.42,8.8],target:[0,1.23,0]},front:{pos:[0,1.25,8.8],target:[0,1.23,0]},left:{pos:[-5.65,1.85,6.77],target:[0,1.23,0]},right:{pos:[5.65,1.85,6.77],target:[0,1.23,0]},back:{pos:[0,1.55,-8.8],target:[0,1.23,0]},detail:{pos:[0,2.63,3.55],target:[.015,2.62,.03]}};
+let needsFrames=1,activeView='portrait',clay=false;
+const invalidate=()=>{needsFrames=Math.max(needsFrames,1);};
+const presets={portrait:{pos:[0,1.68,7.6],target:[0,1.53,0]},front:{pos:[0,1.55,7.6],target:[0,1.53,0]},left:{pos:[-4.9,1.85,5.8],target:[0,1.53,0]},right:{pos:[4.9,1.85,5.8],target:[0,1.53,0]},back:{pos:[0,1.7,-7.6],target:[0,1.53,0]},detail:{pos:[0,2.63,3.55],target:[.015,2.62,.03]}};
 function setView(name){const p=presets[name]||presets.portrait;activeView=name;camera.position.set(...p.pos);controls.target.set(...p.target);controls.update();document.querySelectorAll('[data-view]').forEach(el=>el.classList.toggle('active',el.dataset.view===name));invalidate();}
 async function init(){
  try{
   renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true,powerPreference:'high-performance'});
   renderer.setPixelRatio(params.has('capture')?1:Math.min(devicePixelRatio,mobile?1.5:1.75));renderer.setClearColor(0x000000,0);
   renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1;
-  renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.shadowMap.autoUpdate=false;renderer.shadowMap.needsUpdate=true;
   host.appendChild(renderer.domElement);renderer.domElement.setAttribute('aria-label','Interactive original 3D upper-body portrait. Drag to rotate.');
   scene=new THREE.Scene();camera=new THREE.PerspectiveCamera(32,1,.1,50);
   controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.10;controls.enablePan=false;controls.minDistance=2.2;controls.maxDistance=13;controls.minPolarAngle=.25;controls.maxPolarAngle=2.72;controls.autoRotateSpeed=.48;controls.addEventListener('change',invalidate);
@@ -41,7 +41,7 @@ async function init(){
   $('#reset').onclick=()=>{controls.autoRotate=false;$('#rotate').checked=false;setView('portrait');};
   $('#rotate').onchange=e=>{controls.autoRotate=e.target.checked;invalidate();};
   $('#wire').onchange=e=>{portrait.setWire(e.target.checked);invalidate();};
-  $('#hair').onchange=e=>{portrait.hairGroup.visible=e.target.checked;invalidate();};
+  $('#hair').onchange=e=>{portrait.hairGroup.visible=e.target.checked;renderer.shadowMap.needsUpdate=true;invalidate();};
   $('#exposure').oninput=e=>{renderer.toneMappingExposure=Number(e.target.value);$('#exposure-value').textContent=Number(e.target.value).toFixed(2);invalidate();};
   function setClay(on){clay=on;portrait.setClay(on);portrait.setWire($('#wire').checked);$('#clay').classList.toggle('active',on);$('#studio').classList.toggle('active',!on);$('#mode-name').textContent=on?'CLAY STUDY':'LIVE 3D';invalidate();}
   $('#studio').onclick=()=>setClay(false);$('#clay').onclick=()=>setClay(true);

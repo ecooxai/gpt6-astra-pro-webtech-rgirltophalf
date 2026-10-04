@@ -1,1 +1,44 @@
-{"revision":"initial-geometry","score":null,"iterations":0,"note":"Initial geometry is being reviewed. Scores are subjective visual assessments, not an automated similarity benchmark. Target: above 95/100.","reviews":[],"artifacts":[]}
+{
+  "revision": "2026-10-04T11:30:33.105456+00:00",
+  "score": 64,
+  "iterations": 5,
+  "note": "Review 5: 64/100. Corrected iris occlusion, widened neck and shoulders, and softened garment folds. Hair remains too sculpted and skin too uniform. Scores are manual visual judgments, not measured similarity.",
+  "reviews": [
+    {
+      "title": "05 \u00b7 Eye depth and proportions",
+      "score": 64,
+      "image": "process/iteration-05-portrait.png",
+      "note": "Corrected iris occlusion, widened neck and shoulders, and softened garment folds. Hair remains too sculpted and skin too uniform.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-05-portrait.png"
+    },
+    {
+      "title": "04 \u00b7 Continuous facial surface",
+      "score": 60,
+      "image": "process/iteration-04-portrait.png",
+      "note": "Removed the facial seam and improved the chin. Eye depth and scalp detail still need refinement.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-04-portrait.png"
+    },
+    {
+      "title": "03 \u00b7 Volume and anatomy",
+      "score": 55,
+      "image": "process/iteration-03-portrait.png",
+      "note": "Added fuller front hair; a lower-face transition seam was identified.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-03-portrait.png"
+    },
+    {
+      "title": "02 \u00b7 Eyes, coverage & crop",
+      "score": 52,
+      "image": "process/iteration-02-portrait.png",
+      "note": "Fixed occluded irises and scalp intersections; darkened hair; shortened crop. Front hair, facial curvature and eyelids remain too stylized.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-02-portrait.png"
+    },
+    {
+      "title": "01 \u00b7 Initial geometry",
+      "score": 38,
+      "image": "process/iteration-01-portrait.png",
+      "note": "Original parametric geometry renders in Chrome. Problems: hidden irises, scalp intersections, sparse front hair, elongated crop.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-01-portrait.png"
+    }
+  ],
+  "artifacts": []
+}
