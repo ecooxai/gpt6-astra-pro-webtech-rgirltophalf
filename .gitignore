@@ -7,3 +7,5 @@ build/
 *.glb
 
 .pages/
+
+/.review/

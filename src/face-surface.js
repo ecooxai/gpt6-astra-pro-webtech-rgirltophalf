@@ -33,7 +33,7 @@ export const seamY=t=>1.949-.007*(1-t*t)+.003*Math.cos(t*PI);
 function lipShape(x,y){
  const t=x/.172;if(Math.abs(t)>=1.04)return null;
  const f=Math.max(0,1-t*t),s=seamY(t),upper=y>=s;
- const h=(upper?(.033+.013*G(Math.abs(t)-.29,.18)-.003*G(t,.10)):.046)*Math.pow(f,.70);
+ const h=(upper?(.040+.013*G(Math.abs(t)-.29,.18)-.003*G(t,.10)):.061)*Math.pow(f,.70);
  if(h<.0001)return null;
  return {t,upper,v:Math.abs(y-s)/h,f,h,s};
 }
@@ -60,7 +60,7 @@ export function buildContinuousFace({parent,material,faceZ,headWidth,backDepth,c
   z-=.012*cavity;
   const lip=lipShape(x,y);
   if(lip&&lip.v<1.45){const {v,f,upper}=lip;
-   const shape=v<1?(.017*(1-v*v*(3-2*v))+(upper?.014:.020)*Math.sin(PI*v)**2):0;
+   const shape=v<1?(.017*(1-v*v*(3-2*v))+(upper?.017:.024)*Math.sin(PI*v)**2):0;
    z+=shape*Math.pow(f,.7);
    z-=.0018*G(y-lip.s,.0018)*Math.pow(f,.7);
   }
@@ -81,7 +81,7 @@ export function buildContinuousFace({parent,material,faceZ,headWidth,backDepth,c
   if(lip&&lip.v<1.4){
    const f=(1-THREE.MathUtils.smoothstep(lip.v,.79,1.21))*THREE.MathUtils.smoothstep(lip.f,0,.15);
    c.lerp(new THREE.Color(lip.upper?'#c47f7e':'#d9918b'),f*.85);
-   c.lerp(new THREE.Color('#773e40'),.72*G(y-lip.s,.0023)*Math.pow(lip.f,.5));
+   c.lerp(new THREE.Color('#773e40'),.74*(.45+.55*lip.t*lip.t)*G(y-lip.s,.0023)*Math.pow(lip.f,.5));
    const grain=.002*Math.sin(x*310+Math.sin(y*79))*f;
    c.r+=grain;c.g+=grain*.4;c.b+=grain*.3;
   }
@@ -106,7 +106,7 @@ export function buildContinuousFace({parent,material,faceZ,headWidth,backDepth,c
  }
  for(let i=0;i<=180;i++){
   const t=-.999+1.998*i/180,x=t*.172,sy=seamY(t),f=1-t*t;
-  const hu=(.033+.013*G(Math.abs(t)-.29,.18)-.003*G(t,.10))*Math.pow(f,.70),hl=.046*Math.pow(f,.70);
+  const hu=(.040+.013*G(Math.abs(t)-.29,.18)-.003*G(t,.10))*Math.pow(f,.70),hl=.061*Math.pow(f,.70);
   for(let j=-18;j<=18;j++)add(x,sy+(j>=0?hu:hl)*j/18);
  }
  const tri=Delaunator.from(pts).triangles,p=[],uv=[],c=[],idx=[],norm=[];

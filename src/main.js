@@ -14,7 +14,7 @@ function download(blob,name){const a=document.createElement('a');a.href=URL.crea
 let renderer,scene,camera,controls,portrait;
 let needsFrames=1,activeView='portrait',clay=false;
 const invalidate=()=>{needsFrames=Math.max(needsFrames,1);};
-const presets={portrait:{pos:[0,1.68,7.6],target:[0,1.53,0]},front:{pos:[0,1.55,7.6],target:[0,1.53,0]},left:{pos:[-4.9,1.85,5.8],target:[0,1.53,0]},right:{pos:[4.9,1.85,5.8],target:[0,1.53,0]},back:{pos:[0,1.7,-7.6],target:[0,1.53,0]},detail:{pos:[0,2.63,3.55],target:[.015,2.62,.03]}};
+const presets={portrait:{pos:[0,2.42,7.6],target:[0,1.53,0]},front:{pos:[0,1.55,7.6],target:[0,1.53,0]},left:{pos:[-4.9,2.35,5.8],target:[0,1.53,0]},right:{pos:[4.9,2.35,5.8],target:[0,1.53,0]},back:{pos:[0,1.7,-7.6],target:[0,1.53,0]},detail:{pos:[0,2.63,3.55],target:[.015,2.62,.03]}};
 function setView(name){const p=presets[name]||presets.portrait;activeView=name;camera.position.set(...p.pos);controls.target.set(...p.target);controls.update();document.querySelectorAll('[data-view]').forEach(el=>el.classList.toggle('active',el.dataset.view===name));invalidate();}
 async function init(){
  try{

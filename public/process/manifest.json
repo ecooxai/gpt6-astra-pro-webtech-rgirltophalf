@@ -1,9 +1,16 @@
 {
-  "revision": "2026-10-04T18:10:46.554420+00:00",
-  "score": 75,
-  "iterations": 16,
-  "note": "Review 16: 75/100. Darkened the hair toward the reference and replaced layered ear tubes with continuous sculpted volumes. Root strips still read as separate bands; a new continuous root-flow surface is needed. Scores are manual visual judgments, not measured similarity.",
+  "revision": "2026-10-04T18:35:01.623742+00:00",
+  "score": 76,
+  "iterations": 17,
+  "note": "Review 17: 76/100. Widened the cheeks, increased lip fullness, raised the portrait camera, and authored anatomical skin and iris maps. The first refractive-eye trial stalled the software renderer; the lighter reflective layer rendered successfully. The banded crown remains the primary flaw. Scores are manual visual judgments, not measured similarity.",
   "reviews": [
+    {
+      "title": "17 \u00b7 Face proportions, skin atlas and reflective eyes",
+      "score": 76,
+      "image": "process/iteration-17-portrait.png",
+      "note": "Widened the cheeks, increased lip fullness, raised the portrait camera, and authored anatomical skin and iris maps. The first refractive-eye trial stalled the software renderer; the lighter reflective layer rendered successfully. The banded crown remains the primary flaw.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-17-portrait.png"
+    },
     {
       "title": "16 \u00b7 Darker groom and continuous ear anatomy",
       "score": 75,

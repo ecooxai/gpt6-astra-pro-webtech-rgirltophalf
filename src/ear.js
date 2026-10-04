@@ -6,7 +6,7 @@ export function buildEar(parent,side,baseMaterial){
  const material=baseMaterial.clone();material.vertexColors=true;material.color.set('#ffffff');material.roughness=.54;
  for(let back=0;back<2;back++)for(let j=0;j<=nr;j++)for(let i=0;i<=na;i++){
   const r=j/nr,a=2*Math.PI*i/na,c=Math.cos(a),s=Math.sin(a),lx=.069*r*c*(1+.10*s),ly=.179*r*s-.012*G(s+.7,.35)*r;
-  const x=side*(.557+lx+.010*r*s),y=2.420+ly;
+  const x=side*(.591+lx+.010*r*s),y=2.420+ly;
   const rim=G(r-.89,.075),bowl=G(lx-.006,.042)*G(ly-.018,.083),anti=G(r-.59,.075)*Math.max(0,.4+.6*c)*(.4+.6*G(ly-.044,.104));
   let z=back?-.030-.014*Math.sqrt(Math.max(0,1-r*r)):.040+.024*Math.sqrt(Math.max(0,1-r*r))+.034*rim-.037*bowl+.028*anti;
   if(!back){z+=.033*G(lx+.037,.014)*G(ly+.016,.025);z+=.016*G(lx,.047)*G(ly+.122,.039);}
