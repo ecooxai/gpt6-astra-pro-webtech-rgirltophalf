@@ -1,9 +1,16 @@
 {
-  "revision": "2026-10-04T11:55:58.986132+00:00",
-  "score": 68,
-  "iterations": 8,
-  "note": "Review 8: 68/100. Softer facial transitions and asymmetric fringe. Photorealistic skin and hair still need substantial refinement. Scores are manual visual judgments, not measured similarity.",
+  "revision": "2026-10-04T12:12:46.604028+00:00",
+  "score": 69,
+  "iterations": 9,
+  "note": "Review 9: 69/100. Better lower-face length, crown volume, and shoulder width. The dominant remaining gaps are skin response, hair-root flow, and collar placement. Scores are manual visual judgments, not measured similarity.",
   "reviews": [
+    {
+      "title": "09 \u00b7 Portrait proportions",
+      "score": 69,
+      "image": "process/iteration-09-portrait.png",
+      "note": "Better lower-face length, crown volume, and shoulder width. The dominant remaining gaps are skin response, hair-root flow, and collar placement.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-09-portrait.png"
+    },
     {
       "title": "08 \u00b7 Soft tissue and fringe",
       "score": 68,

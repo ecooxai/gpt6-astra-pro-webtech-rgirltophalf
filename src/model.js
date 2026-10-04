@@ -29,13 +29,13 @@ const headWidth=y=>interp(faceRows,y,1);
 const frontDepth=y=>interp(faceRows,y,2)-chinCenter(y);
 const backDepth=y=>interp(faceRows,y,3)+chinCenter(y);
 function scalpFront(x,y){const sy=clamp(y-.066,1.8,3.473);return faceZ(x/1.12,sy)*1.075+.028;}
-function eyeOpening(x,y){for(const side of[-1,1]){const t=(x-side*.243)/.139;if(Math.abs(t)<.996){const c=2.419+side*t*.009,b=Math.pow(Math.max(0,1-t*t),.72);if(y>c-.050*b-.002&&y<c+.076*b+.002)return true;}}return false;}
+function eyeOpening(x,y){for(const side of[-1,1]){const t=(x-side*.243)/.139;if(Math.abs(t)<.996){const c=2.419+side*t*.009,b=Math.pow(Math.max(0,1-t*t),.72);if(y>c-.050*b-.022*Math.sqrt(b)&&y<c+.076*b+.027*Math.sqrt(b))return true;}}return false;}
 export function faceZ(x,y){const w=Math.max(.008,headWidth(y)),d=frontDepth(y),u=clamp(x/w,-.9999,.9999);let z=d*Math.pow(Math.sqrt(Math.max(0,1-u*u)),.85)+chinCenter(y);z+=.030*g(Math.abs(x)-.34,.115)*g(y-2.25,.16);z-=.037*g(Math.abs(x)-.233,.155)*g(y-2.419,.093);z+=.021*g(Math.abs(x)-.22,.17)*g(y-2.55,.065);z+=.065*g(x,.066)*g(y-2.38,.23);z+=.141*g(x,.086)*g(y-2.170,.070)+.018*g(x,.025)*g(y-2.108,.030);z+=.052*g(Math.abs(x)-.075,.040)*g(y-2.130,.055);z-=.009*g(x,.018)*g(y-2.035,.066);z+=.007*g(Math.abs(x)-.03,.013)*g(y-2.035,.06);z+=.009*g(x,.20)*g(y-1.950,.10);z-=.01*g(x,.11)*g(y-1.86,.035);z+=.01*g(x,.19)*g(y-1.83,.06);z+=.015*g(Math.abs(x)-.26,.15)*g(y-2.325,.07);z-=.018*g(Math.abs(x)-.12,.05)*g(y-2.419,.10);return z;}
 function skinColor(x,y,front){const base=new THREE.Color('#f0caba');let blush=(g(Math.abs(x)-.36,.13)*g(y-2.25,.14)*.51+g(x,.115)*g(y-2.14,.09)*.16)*front;base.lerp(new THREE.Color('#d88d89'),blush);const under=g(Math.abs(x)-.23,.16)*g(y-2.355,.035)*front*.12;base.lerp(new THREE.Color('#bc8988'),under);const lids=g(Math.abs(x)-.23,.18)*g(y-2.495,.025)*front*.12;base.lerp(new THREE.Color('#bd8b7a'),lids);const light=g(x+.28,.24)*g(y-2.24,.30)*front*.075;base.lerp(new THREE.Color('#ffe1c7'),light);const grain=(rnd()-.5)*.003;base.r+=grain;base.g+=grain;base.b+=grain;return base;}
 export function buildPortrait({mobile=false}={}){
  seed=220901;
  const root=new THREE.Group();root.name='GPT-6 Astra Pro — original WebGL upper-body portrait';
- const pivot=new THREE.Group();pivot.name='Natural head tilt';pivot.position.y=2.46;root.add(pivot);
+ const pivot=new THREE.Group();pivot.name='Natural head tilt';pivot.position.set(.075,2.438,0);root.add(pivot);
  const head=new THREE.Group();head.position.y=-2.46;pivot.add(head);pivot.rotation.z=-.095;pivot.rotation.y=-.025;
  const hairGroup=new THREE.Group();hairGroup.name='Original dimensional strand hair';head.add(hairGroup);
  const pore=noiseTexture();
@@ -99,7 +99,7 @@ export function buildPortrait({mobile=false}={}){
   mesh(makeGeometry(ip,ii,iu),irisMat,head,'Brown radial iris '+s);
   ball(head,'Pupil '+s,pupilMat,[ix,iy,iz+.005],[.026,.026,.004],40);
   const wet=new THREE.MeshPhysicalMaterial({color:'#ffffff',transparent:true,opacity:.11,roughness:.055,clearcoat:1,clearcoatRoughness:.025,depthWrite:false});
-  ball(head,'Clear corneal lens '+s,wet,[ix,iy,iz+.004],[.064,.064,.006],48);
+  const corneal=mesh(makeGeometry(ip,ii,iu),wet,head,'Clipped corneal surface '+s);corneal.position.z=.0015;
   const catchMat=new THREE.MeshBasicMaterial({color:'#fff7ed'});
   ball(head,'Softbox catchlight '+s,catchMat,[ix-.017,iy+.024,iz+.011],[.006,.008,.0020],24);
   ball(head,'Secondary eye glint '+s,catchMat,[ix+.014,iy-.013,iz+.010],[.0025,.0035,.0012],16);
@@ -232,13 +232,18 @@ export function buildPortrait({mobile=false}={}){
  const cap=mesh(new THREE.CylinderGeometry(.81,.81,.012,90,1,false),white,root,'Finished lower torso crop');cap.position.set(0,-.434,0);cap.scale.z=.456;
  root.userData={author:'GPT-6 Astra Pro',tools:'Three.js / WebGL / JavaScript / Headless Chrome',source:'All visual assets procedurally authored in src/model.js',seed:220901};
 
+
+ for(const side of[-1,1]){const cap=mesh(new THREE.CircleGeometry(1,64),white,root,'Closed sleeve crop '+side);cap.rotation.x=PI/2;cap.position.set(side*.925,-.440,-.025);cap.scale.set(.193,.215,1);}
+ function bakeAndWarp(o,hair=false,body=false){o.updateMatrix();o.geometry.applyMatrix4(o.matrix);o.position.set(0,0,0);o.quaternion.identity();o.scale.set(1,1,1);o.updateMatrix();const a=o.geometry.getAttribute('position');for(let i=0;i<a.count;i++){let x=a.getX(i),y=a.getY(i);if(body)y-=.12*(1-THREE.MathUtils.smoothstep(y,-.44,-.30));else y-=.07*(1-THREE.MathUtils.smoothstep(y,2.13,2.43));if(hair){x*=1.05;y+=.08*THREE.MathUtils.smoothstep(y,3.1,3.5);}a.setXY(i,x,y);}a.needsUpdate=true;o.geometry.computeVertexNormals();}
+ head.traverse(o=>{if(o.isMesh)bakeAndWarp(o,o.parent===hairGroup,false);});
+ for(const o of root.children)if(o.isMesh)bakeAndWarp(o,false,true);
  // Consolidate meshes by material inside each transform/layer group to keep mobile draw calls low.
  for(const parent of [head,hairGroup,root]){
   const batches=new Map();
   for(const o of [...parent.children])if(o.isMesh){const key=o.material.uuid+'_'+Object.keys(o.geometry.attributes).sort().join(',');if(!batches.has(key))batches.set(key,[]);batches.get(key).push(o);}
   for(const batch of batches.values())if(batch.length>1){const gs=batch.map(o=>{o.updateMatrix();return o.geometry.clone().applyMatrix4(o.matrix);});const geo=mergeGeometries(gs,false);if(geo){const joined=mesh(geo,batch[0].material,parent,'Batched original surfaces — '+batch[0].name);joined.userData.components=batch.map(o=>o.name);for(const o of batch){parent.remove(o);o.geometry.dispose();}}for(const geo of gs)geo.dispose();}
  }
- for(const o of root.children)if(o.isMesh)o.scale.x=1.10;
+ for(const o of root.children)if(o.isMesh)o.scale.x=1.27;
  const originalMaterials=new Map();root.traverse(o=>{if(o.isMesh)originalMaterials.set(o,o.material);});
  const clayMat=new THREE.MeshStandardMaterial({color:'#bda18d',roughness:.85,side:THREE.DoubleSide});
  return {root,hairGroup,originalMaterials,clayMat,stats:{fineHairStrands:strandCount+372+scalpFibers+frontGuides.length*(mobile?12:24),solidHairLocks:122+frontGuides.length+bangs.length,seed:220901},setClay(on){root.traverse(o=>{if(o.isMesh)o.material=on?clayMat:originalMaterials.get(o);});},setWire(on){const mats=new Set();root.traverse(o=>{if(o.isMesh)mats.add(o.material);});for(const m of mats)m.wireframe=on;}};
