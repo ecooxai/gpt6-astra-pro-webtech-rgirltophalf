@@ -1,9 +1,0 @@
-node_modules/
-.logs/
-*.log
-reference/
-build/
-*.zip
-*.glb
-
-.pages/
