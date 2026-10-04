@@ -1,9 +1,44 @@
 {
-  "revision": "2026-10-04T17:58:33.046059+00:00",
-  "score": 74,
-  "iterations": 15,
-  "note": "Review 15: 74/100. Rebuilt the blouse with rounded set-in sleeves, a thick rolled collar, woven surface detail and conforming stitched placket. The hair-root bands and overall facial realism remain below the target. Scores are manual visual judgments, not measured similarity.",
+  "revision": "2026-10-04T18:57:04.265071+00:00",
+  "score": 77,
+  "iterations": 20,
+  "note": "Review 20: 77/100. Rebuilt eyebrow growth, stabilized the orbital transition, refined the nose and lip proportions, and restored a neutral hair color. Geometry checks pass. The eyelid margins, uniform groom and cloth shading still prevent a high-fidelity likeness score. Scores are manual visual judgments, not measured similarity.",
   "reviews": [
+    {
+      "title": "20 \u00b7 Smoother anatomy and neutral dark-brown fibers",
+      "score": 77,
+      "image": "process/iteration-20-portrait.png",
+      "note": "Rebuilt eyebrow growth, stabilized the orbital transition, refined the nose and lip proportions, and restored a neutral hair color. Geometry checks pass. The eyelid margins, uniform groom and cloth shading still prevent a high-fidelity likeness score.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-20-portrait.png"
+    },
+    {
+      "title": "19 \u00b7 Fuller hair coverage and feathered crop",
+      "score": 75,
+      "image": "process/iteration-19-portrait.png",
+      "note": "Moved the front hair masses inward, hid the far ear, shortened the tips and added finer hairline growth. The bright fiber trial introduced an unwanted pink cast and still reads as too uniformly combed; these defects remain visible.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-19-portrait.png"
+    },
+    {
+      "title": "18 \u00b7 Continuous root flow \u2014 uniformity regression",
+      "score": 75,
+      "image": "process/iteration-18-portrait.png",
+      "note": "Removed the disconnected scalp bands and matched roots to a continuous rear volume. Four-view review reveals hair that is too uniform, front masses too far outward, and tips that extend below the crop. This is an intermediate geometry pass, not the target quality.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-18-portrait.png"
+    },
+    {
+      "title": "17 \u00b7 Face proportions, skin atlas and reflective eyes",
+      "score": 76,
+      "image": "process/iteration-17-portrait.png",
+      "note": "Widened the cheeks, increased lip fullness, raised the portrait camera, and authored anatomical skin and iris maps. The first refractive-eye trial stalled the software renderer; the lighter reflective layer rendered successfully. The banded crown remains the primary flaw.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-17-portrait.png"
+    },
+    {
+      "title": "16 \u00b7 Darker groom and continuous ear anatomy",
+      "score": 75,
+      "image": "process/iteration-16-portrait.png",
+      "note": "Darkened the hair toward the reference and replaced layered ear tubes with continuous sculpted volumes. Root strips still read as separate bands; a new continuous root-flow surface is needed.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-16-portrait.png"
+    },
     {
       "title": "15 \u00b7 Rounded tailoring and sewn collar",
       "score": 74,
