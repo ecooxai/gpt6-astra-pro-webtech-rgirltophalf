@@ -1,0 +1,42 @@
+{
+  "iteration": "19",
+  "views": [
+    "portrait",
+    "detail",
+    "left",
+    "back"
+  ],
+  "errors": [],
+  "stats": {
+    "triangles": 1326372,
+    "drawCalls": 21,
+    "geometries": 21,
+    "textures": 20,
+    "hairCards": 141,
+    "solidHairLocks": 132,
+    "fineHairStrands": 3448,
+    "proceduralFibersPerCard": 40,
+    "rootFlow": "continuous curved scalp",
+    "seed": 220901
+  },
+  "timings": [
+    {
+      "view": "portrait",
+      "elapsedMs": 44882
+    },
+    {
+      "view": "detail",
+      "elapsedMs": 23806
+    },
+    {
+      "view": "left",
+      "elapsedMs": 25924
+    },
+    {
+      "view": "back",
+      "elapsedMs": 21334
+    }
+  ],
+  "totalMs": 137619,
+  "time": "2026-10-04T18:47:57.315Z"
+}

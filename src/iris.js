@@ -12,9 +12,9 @@ export function buildIrisTexture(){
   const cellular=(noise(a*51+170,r*18)-.5)*.33,collarette=G(r-.55-.026*Math.sin(a*19),.037);
   let tone=.76+fibers+cellular+.15*collarette;
   tone*=1-.52*THREE.MathUtils.smoothstep(r,.81,1.0);
-  tone*=1-.23*THREE.MathUtils.smoothstep(dy,-.10,.53);
+  tone*=1-.16*THREE.MathUtils.smoothstep(dy,-.10,.53);
   tone*=1-.11*G(r-.415,.024);
-  let red=77*tone,green=49*tone,blue=37*tone;
+  let red=91*tone,green=61*tone,blue=45*tone;
   const crypts=G(r-.67-.036*Math.sin(a*23),.026)*Math.pow(Math.max(0,Math.sin(a*69+Math.sin(a*13))),6);
   red*=1-crypts*.30;green*=1-crypts*.34;blue*=1-crypts*.30;
   d[k]=Math.round(THREE.MathUtils.lerp(7,red,pupilBlend));d[k+1]=Math.round(THREE.MathUtils.lerp(6,green,pupilBlend));d[k+2]=Math.round(THREE.MathUtils.lerp(8,blue,pupilBlend));d[k+3]=255;

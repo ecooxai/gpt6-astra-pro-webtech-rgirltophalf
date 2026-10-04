@@ -3,7 +3,7 @@ import * as THREE from 'three';
 const G=(x,s)=>Math.exp(-x*x/(s*s));
 export function buildEar(parent,side,baseMaterial){
  const p=[],uv=[],col=[],idx=[],na=128,nr=54;
- const material=baseMaterial.clone();material.vertexColors=true;material.color.set('#ffffff');material.roughness=.54;
+ const material=baseMaterial.clone();material.vertexColors=true;material.color.set('#ffffff');material.roughness=.57;material.normalMap=null;material.bumpMap=null;material.map=null;material.roughnessMap=null;material.aoMap=null;
  for(let back=0;back<2;back++)for(let j=0;j<=nr;j++)for(let i=0;i<=na;i++){
   const r=j/nr,a=2*Math.PI*i/na,c=Math.cos(a),s=Math.sin(a),lx=.069*r*c*(1+.10*s),ly=.179*r*s-.012*G(s+.7,.35)*r;
   const x=side*(.591+lx+.010*r*s),y=2.420+ly;
