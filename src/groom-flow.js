@@ -126,7 +126,10 @@ export function buildGroom({parent,skinMaterial,mobile=false,faceZ}){
   for(let k=0;k<count;k++){
    const a=hash(id*199+k,3),phase=hash(id*197+k,21)*TAU,offset=(a-.5)*spread*2,base=fine.p.length/3,width=flyaway?.00034+.00020*hash(id,k):.00043+.00027*hash(id,k);
    const color=new THREE.Color(flyaway?'#493e39':'#352b29').multiplyScalar(.59+.73*hash(k,id));
-   for(const f of frames){
+   const end=(id>=59000&&id<60000?.81:.95)+(id>=59000&&id<60000?.19:.05)*hash(id,k+931);
+   for(let frameIndex=0;frameIndex<=segments;frameIndex++){
+    const q=frameIndex*end,index=Math.floor(q),blend=q-index,A=frames[index],B=frames[Math.min(segments,index+1)];
+    const f={t:frameIndex/segments,p:A.p.clone().lerp(B.p,blend),S:A.S.clone().lerp(B.S,blend).normalize(),O:A.O.clone().lerp(B.O,blend).normalize()};
     const taper=Math.pow(Math.max(.0001,1-smooth(f.t,.91,1)),.75),curl=(.0028*Math.sin(f.t*16+phase)+.0014*Math.sin(f.t*39+phase*3))*Math.sin(PI*f.t),lift=flyaway?.018+.035*Math.sin(PI*f.t)**2:.014+.010*hash(id,k+18);
     const p=f.p.clone().addScaledVector(f.S,offset*(.7+.3*Math.sin(PI*f.t))*smooth(f.t,0,.042)+curl).addScaledVector(f.O,mix(.002,lift,smooth(f.t,0,.045)));
     for(let a=0;a<2;a++){const q=p.clone().addScaledVector(f.S,(a?1:-1)*width*taper),n=f.O.clone().multiplyScalar(.92).addScaledVector(f.S,(a?1:-1)*.392).normalize();fine.p.push(q.x,q.y,q.z);fine.n.push(n.x,n.y,n.z);fine.uv.push(a,f.t);fine.color.push(color.r,color.g,color.b);}
@@ -175,7 +178,7 @@ export function buildGroom({parent,skinMaterial,mobile=false,faceZ}){
  [[.168,3.15],[.176,2.960],[.13,2.800],[.091,2.664],[.055,2.598]],
  [[.130,3.15],[.021,2.990],[-.121,2.809],[-.244,2.593],[-.349,2.394]]];
  for(let i=0;i<bangPaths.length;i++){
-  const points=bangPaths[i].map(([x,y],j)=>{if(j===0)y+=.115;const skin=faceZ(x,y)+.029,cap=RZ*Math.sqrt(Math.max(0,1-(x/RX)**2-((y-CY)/RY)**2))+.028;return V(x,y,mix(skin,Math.max(skin,cap),smooth(y,2.91,3.16)));}),curve=new THREE.CatmullRomCurve3(points,false,'centripetal'),field=(t,p)=>V(p.x*.28,.03,1).normalize(),width=[.022,.015,.014,.011,.008,.008,.014,.006,.007][i];
+  const points=bangPaths[i].map(([x,y],j)=>{if(j===0)y+=.115;const skin=faceZ(x,y)+.029,cap=RZ*Math.sqrt(Math.max(0,1-(x/RX)**2-((y-CY)/RY)**2))+.028;return V(x,y,mix(skin,Math.max(skin,cap),smooth(y,2.91,3.16))-(j===0?.060:0));}),curve=new THREE.CatmullRomCurve3(points,false,'centripetal'),field=(t,p)=>V(p.x*.28,.03,1).normalize(),width=[.029,.020,.014,.012,.008,.007,.016,.006,.008][i];
   ribbon(cards,curve,width,.001,field,null,{segments:84,across:4,offset:.003,tip:.85,endStart:.05});cardCount++;
   addFine(curve,field,mobile?30:48,width*.82,59001+i);
  }

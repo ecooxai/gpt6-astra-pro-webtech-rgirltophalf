@@ -40,7 +40,7 @@ export function buildEyes(parent,{skinMaterial,faceSculpt}){
   }
   orientFront(p,idx);add(parent,geometry(p,idx,uv,colors),white,'Curved bounded sclera '+side);
   // Embedded iris disk; its upper and lower edges are cropped by the true lid boundary.
-  const ip=[],iu=[],ic=[],ii=[],nr=18,na=112,radius=.0585,ix=side*eyeX-.0015,iy=eyeCenterY(side)+.0035;
+  const ip=[],iu=[],ic=[],ii=[],nr=18,na=112,radius=.0605,ix=side*eyeX-.0015,iy=eyeCenterY(side)+.0035;
   for(let j=0;j<=nr;j++)for(let i=0;i<=na;i++){
    const r=radius*j/nr,a=TAU*i/na,x=ix+r*Math.cos(a),rawY=iy+r*Math.sin(a),t=clamp((x-side*eyeX)/eyeW,-.9999,.9999),lo=innerEdge(side,t,false).y,hi=innerEdge(side,t,true).y,y=clamp(rawY,lo+.0002,hi-.0002);
    ip.push(x,y,eyeSurface(side,x,y)+.0018);iu.push(.5+(x-ix)/(radius*2),.5+(y-iy)/(radius*2));const shade=1-.25*Math.exp(-(hi-y)/.010);ic.push(shade,shade,shade);

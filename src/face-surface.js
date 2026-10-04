@@ -14,7 +14,7 @@ export function eyeEdge(side,t,upper){
  const x=side*eyeX+eyeW*t,y=eyeCenterY(side)+side*t*.009+(upper?.055:-.049)*Math.pow(Math.max(0,1-t*t),.72);
  return new THREE.Vector3(x,y,eyeSurface(side,x,y));
 }
-export function eyeSurface(side,x,y){return .212+Math.sqrt(Math.max(.00001,.18**2-(x-side*eyeX)**2-(y-eyeCenterY(side))**2));}
+export function eyeSurface(side,x,y){return .204+Math.sqrt(Math.max(.00001,.225**2-(x-side*eyeX)**2-(y-eyeCenterY(side))**2));}
 function inEye(x,y,margin=0){
  for(const s of[-1,1]){const t=(x-s*eyeX)/eyeW;if(Math.abs(t)>1)continue;
  const lo=eyeEdge(s,t,false).y,hi=eyeEdge(s,t,true).y;
@@ -82,12 +82,12 @@ export function buildContinuousFace({parent,material,faceZ,headWidth,backDepth,c
     c.lerp(new THREE.Color('#ae7a71'),.11*G(y-e.y-.035,.008)*Math.max(0,1-t*t));}
   }
   const cavity=nasalAperture(x,y);
-  c.lerp(new THREE.Color('#805046'),.43*Math.pow(cavity,.8));
+  c.lerp(new THREE.Color('#805046'),.32*Math.pow(cavity,.8));
   const lip=lipShape(x,y);
   if(lip&&lip.v<1.4){
    const f=(1-THREE.MathUtils.smoothstep(lip.v,.63,1.38))*THREE.MathUtils.smoothstep(lip.f,0,.15);
    c.lerp(new THREE.Color(lip.upper?'#c58280':'#db918f'),f*.70);
-   c.lerp(new THREE.Color('#773e40'),.74*(.45+.55*lip.t*lip.t)*G(y-lip.s,.0023)*Math.pow(lip.f,.5));
+   c.lerp(new THREE.Color('#8b5050'),.61*(.45+.55*lip.t*lip.t)*G(y-lip.s,.0023)*Math.pow(lip.f,.5));
    const grain=.002*Math.sin(x*310+Math.sin(y*79))*f;
    c.r+=grain;c.g+=grain*.4;c.b+=grain*.3;
   }

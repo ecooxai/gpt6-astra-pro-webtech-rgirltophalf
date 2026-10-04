@@ -2,7 +2,7 @@ import './style.css';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js';
-import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+import { exportPortrait, validateExport } from './export-portrait.js';
 import { buildPortrait } from './model.js';
 import { createStudioEnvironment } from './studio.js';
 const $=s=>document.querySelector(s);
@@ -15,7 +15,7 @@ let renderer,scene,camera,controls,portrait;
 let needsFrames=1,activeView='portrait',clay=false;
 const invalidate=()=>{needsFrames=Math.max(needsFrames,1);};
 const presets={portrait:{pos:[0,2.42,7.6],target:[0,1.53,0]},front:{pos:[0,1.55,7.6],target:[0,1.53,0]},left:{pos:[-4.9,2.35,5.8],target:[0,1.53,0]},right:{pos:[4.9,2.35,5.8],target:[0,1.53,0]},back:{pos:[0,1.7,-7.6],target:[0,1.53,0]},detail:{pos:[0,2.63,3.55],target:[.015,2.62,.03]}};
-function setView(name){const p=presets[name]||presets.portrait;activeView=name;camera.position.set(...p.pos);controls.target.set(...p.target);controls.update();document.querySelectorAll('[data-view]').forEach(el=>el.classList.toggle('active',el.dataset.view===name));invalidate();}
+function setView(name){const p=presets[name]||presets.portrait;activeView=name;camera.position.set(...p.pos);controls.target.set(...p.target);controls.update();document.querySelectorAll('[data-view]').forEach(el=>{el.classList.toggle('active',el.dataset.view===name);el.setAttribute('aria-pressed',String(el.dataset.view===name));});invalidate();}
 async function init(){
  try{
   renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true,powerPreference:'high-performance'});
@@ -47,11 +47,11 @@ async function init(){
   function setClay(on){clay=on;portrait.setClay(on);portrait.setWire($('#wire').checked);$('#clay').classList.toggle('active',on);$('#studio').classList.toggle('active',!on);$('#mode-name').textContent=on?'CLAY STUDY':'LIVE 3D';invalidate();}
   $('#studio').onclick=()=>setClay(false);$('#clay').onclick=()=>setClay(true);
   $('#export-png').onclick=()=>{renderer.render(scene,camera);renderer.domElement.toBlob(b=>{if(b)download(b,`gpt6_astra_pro_webtech_rgirltophalf_${activeView}.png`);});toast('Current WebGL view saved as a transparent PNG.');};
-  async function exportGLB(){const b=$('#export-glb');b.disabled=true;$('#export-status').textContent='Packaging original mesh geometry and procedural materials…';try{const out=await new GLTFExporter().parseAsync(portrait.root,{binary:true,onlyVisible:true,trs:false});download(new Blob([out],{type:'model/gltf-binary'}),'gpt6_astra_pro_webtech_rgirltophalf.glb');$('#export-status').textContent='GLB exported. All geometry, maps and materials are embedded.';return out.byteLength;}catch(e){$('#export-status').textContent='Export failed: '+e.message;throw e;}finally{b.disabled=false;}}
+  async function exportGLB(){const button=$('#export-glb');button.disabled=true;$('#export-status').textContent='Packaging original geometry and portable PBR materials…';try{const out=await exportPortrait(portrait);download(new Blob([out],{type:'model/gltf-binary'}),'gpt6-astra-pro_chatgpt_webtech_rgirltophalf.glb');$('#export-status').textContent='GLB exported with embedded original geometry and maps. Corneas use portable transmission; hair uses its standard PBR fallback.';return out.byteLength;}catch(e){$('#export-status').textContent='Export failed: '+e.message;throw e;}finally{button.disabled=false;}}
   $('#export-glb').onclick=()=>exportGLB().catch(e=>toast(e.message));
   renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();toast('WebGL paused. Reload the page to restore the graphics context.');});
   function animate(){requestAnimationFrame(animate);controls.update();if(controls.autoRotate||needsFrames>0){renderer.render(scene,camera);needsFrames--;}}animate();
-  window.__portrait={ready:true,renderer,scene,camera,controls,model:portrait,setView,setClay,exportGLB,render:()=>renderer.render(scene,camera),stats:()=>({triangles:renderer.info.render.triangles,drawCalls:renderer.info.render.calls,geometries:renderer.info.memory.geometries,textures:renderer.info.memory.textures,...portrait.stats})};
+  window.__portrait={ready:true,renderer,scene,camera,controls,model:portrait,setView,setClay,exportGLB,validateExport,render:()=>renderer.render(scene,camera),stats:()=>({triangles:renderer.info.render.triangles,drawCalls:renderer.info.render.calls,geometries:renderer.info.memory.geometries,textures:renderer.info.memory.textures,...portrait.stats})};
   await refreshJournal();
  }catch(err){console.error(err);$('#loading').innerHTML='<p>Unable to start the 3D studio.</p><small></small>';$('#loading small').textContent=err.message;$('#render-status').textContent='GRAPHICS ERROR';window.__portrait={ready:false,error:err.message};}
 }
