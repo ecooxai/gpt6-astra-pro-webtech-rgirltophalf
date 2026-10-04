@@ -11,9 +11,9 @@ export function buildSkinAtlas(headWidth){
   const lip=lipHeight>.0001?(1-THREE.MathUtils.smoothstep(Math.abs(y-seam)/lipHeight,.68,1.18))*front:0;
   const cx=Math.floor(i/3.6),cy=Math.floor(j/3.6),px=i/3.6-cx-.22-.55*hash(cx,cy),py=j/3.6-cy-.22-.55*hash(cx+23,cy+51),pore=G(Math.hypot(px,py),.12+.035*hash(cx+41,cy-17));
   const grain=hash(i,j)-.5,k=(j*n+i)*4;
-  h[j*n+i]=.5-.026*pore+.007*grain+.021*lip*Math.sin(x*930+1.7*Math.sin(x*137)+y*22)*(1-.5*G(y-seam,.006));
+  h[j*n+i]=.5-.042*pore+.009*grain+.021*lip*Math.sin(x*930+1.7*Math.sin(x*137)+y*22)*(1-.5*G(y-seam,.006));
   const tzone=(.5*G(x,.13)*G(y-2.2-fit.noseShift,.27)+.18*G(x,.22)*G(y-2.95,.32))*front;
-  const rgh=THREE.MathUtils.lerp(.53-.08*tzone+.025*grain,.305+.023*Math.sin(x*1030),lip);
+  const rgh=THREE.MathUtils.lerp(.47-.08*tzone+.032*grain,.255+.030*Math.sin(x*1030),lip);
   rough[k]=rough[k+1]=rough[k+2]=Math.round(255*THREE.MathUtils.clamp(rgh,.25,.65));rough[k+3]=255;
   const freckles=front*.5*Math.pow(Math.max(0,hash(cx-42,cy+37)-.985)*66,2)*G(y-2.22,.23)*G(Math.abs(x)-.35,.2);
   const vascular=front*(.50+.5*Math.sin(i*.067+Math.sin(j*.032)*2))*G(y-2.24,.42);

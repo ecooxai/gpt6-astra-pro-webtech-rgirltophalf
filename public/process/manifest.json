@@ -1,9 +1,16 @@
 {
-  "revision": "2026-10-04T20:15:02.190945+00:00",
-  "score": 77,
-  "iterations": 23,
-  "note": "Review 23: 77/100. Reviewed portrait, left and back. Facial placement improved, but root gaps, a rear seam, overly uniform hair and flat skin remain. This is not the target quality. Scores are manual visual judgments, not measured similarity.",
+  "revision": "2026-10-04T20:19:19.497516+00:00",
+  "score": 78,
+  "iterations": 24,
+  "note": "Review 24: 78/100. The rear gap is closed and the nasal transition is softer. Portrait and detail still expose crown triangles, a bright scalp seam, rigid fringe, and simplified skin. Four views rendered without browser errors. Scores are manual visual judgments, not measured similarity.",
   "reviews": [
+    {
+      "title": "24 \u00b7 Rear continuity and softer facial relief",
+      "score": 78,
+      "image": "process/iteration-24-portrait.png",
+      "note": "The rear gap is closed and the nasal transition is softer. Portrait and detail still expose crown triangles, a bright scalp seam, rigid fringe, and simplified skin. Four views rendered without browser errors.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-24-portrait.png"
+    },
     {
       "title": "23 \u00b7 Recovered continuation: crown gaps remain",
       "score": 77,

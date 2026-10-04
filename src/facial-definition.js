@@ -20,9 +20,9 @@ export function createFaceDefinition({noseShift=0,mouthShift=0,eyeSpacing=.243,e
   z+=.021*g(Math.abs(x)-.22,.17)*g(y-2.55,.065);
   // Nasal ridge, tip, alae and columella have separate, smooth anatomical supports.
   z+=.060*g(x,.064)*g(ny-2.365,.224)*THREE.MathUtils.smoothstep(ny,2.100,2.163);
-  z+=.128*g(x,.096)*g(ny-2.174,.075)*THREE.MathUtils.smoothstep(ny,2.092,2.126);
-  z+=.032*g(x,.031)*g(ny-2.111,.021);
-  z+=.061*g(Math.abs(x)-.089,.042)*g(ny-2.142,.050)*THREE.MathUtils.smoothstep(ny,2.096,2.122);
+  z+=.116*g(x,.094)*g(ny-2.174,.081)*THREE.MathUtils.smoothstep(ny,2.056,2.139);
+  z+=.023*g(x,.030)*g(ny-2.111,.027);
+  z+=.049*g(Math.abs(x)-.084,.041)*g(ny-2.142,.054)*THREE.MathUtils.smoothstep(ny,2.067,2.132);
   z-=.006*g(Math.abs(x)-.126,.013)*g(ny-2.143,.038);
   const py=y-(noseShift+mouthShift)*.5;
   z-=.003*g(x,.023)*g(py-2.035,.054);z+=.003*g(Math.abs(x)-.028,.016)*g(py-2.035,.050);

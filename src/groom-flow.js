@@ -9,16 +9,18 @@ import {builder,finish,ribbon,roundLock,fiberMaps,setGroomSeed} from './hair-pri
 const PI=Math.PI,TAU=2*PI,V=(x,y,z)=>new THREE.Vector3(x,y,z),mix=THREE.MathUtils.lerp,clamp=THREE.MathUtils.clamp,smooth=THREE.MathUtils.smoothstep;
 const hash=(a,b=0)=>{const h=Math.sin(a*127.1+b*311.7+52.7)*43758.5453123;return h-Math.floor(h);};
 const RX=.695,RY=.973,RZ=.643,CY=2.60;
+let activeFaceZ=null;
+function clearScalp(p){if(activeFaceZ&&p.z>0&&p.y>2.65&&p.y<3.47&&Math.abs(p.x)<.575){p.z=Math.max(p.z,activeFaceZ(p.x,p.y)+.027);}return p;}
 const headTilt=fit.roll,cosTilt=Math.cos(headTilt),sinTilt=Math.sin(headTilt);
 function scalpNormal(p){return V(p.x/(RX*RX),(p.y-CY)/(RY*RY),p.z/(RZ*RZ)).normalize();}
 function partPoint(u,side){const x=.075+.018*Math.sin(PI*u)+side*.0035,z=mix(-.49,.587,u),q=Math.sqrt(Math.max(.001,1-(x/RX)**2-(z/RZ)**2));return V(x,CY+RY*q,z);}
-function endAngle(side,u){return side*mix(PI-.085,side<0?1.14:.87,Math.pow(u,.86));}
+function endAngle(side,u){return side*mix(PI,side<0?1.14:.87,Math.pow(u,.86));}
 function rootPoint(side,u,t){
  const root=partPoint(u,side),a=endAngle(side,u),yEnd=2.54+.15*smooth(u,.20,1),qY=(yEnd-CY)/RY,qR=Math.sqrt(1-qY*qY);
  const A=V(root.x/RX,(root.y-CY)/RY,root.z/RZ).normalize(),B=V(qR*Math.sin(a),qY,qR*Math.cos(a)).normalize(),angle=Math.acos(clamp(A.dot(B),-.99999,.99999)),den=Math.sin(angle);
  const n=A.multiplyScalar(Math.sin((1-t)*angle)/den).addScaledVector(B,Math.sin(t*angle)/den).normalize();
  const p=V(n.x*RX,CY+n.y*RY,n.z*RZ),ripple=(.008*Math.sin(u*41+t*7)+.0048*Math.cos(u*91-t*8)+.0024*Math.sin(u*177+t*12))*Math.sin(PI*t);
- return p.addScaledVector(scalpNormal(p),ripple);
+ return clearScalp(p.addScaledVector(scalpNormal(p),ripple));
 }
 function gravityAligned(p){
  const w=1-smooth(p.y,1.25,2.47),x=(cosTilt*(p.x-fit.headX)+sinTilt*(p.y-fit.headY))/fit.scale,y=(-sinTilt*(p.x-fit.headX)+cosTilt*(p.y-fit.headY))/fit.scale+2.46;
@@ -68,13 +70,13 @@ function cuticleMask(){
 }
 function cloneRepeat(t){const c=t.clone();c.wrapS=c.wrapT=THREE.RepeatWrapping;c.needsUpdate=true;return c;}
 export function buildGroom({parent,skinMaterial,mobile=false,faceZ}){
- setGroomSeed(81883);const maps=fiberMaps(),fine=builder(),cores=builder(),cards=builder();
+ activeFaceZ=faceZ;setGroomSeed(81883);const maps=fiberMaps(),fine=builder(),cores=builder(),cards=builder();
  const normal=cloneRepeat(maps.normal),rough=cloneRepeat(maps.rough);
  const baseMat=new THREE.MeshPhysicalMaterial({color:'#ffffff',vertexColors:true,roughness:.73,normalMap:normal,normalScale:new THREE.Vector2(.15,.045),roughnessMap:rough,anisotropy:.90,anisotropyRotation:PI/2,specularIntensity:.45,sheen:.09,sheenColor:new THREE.Color('#69585e'),sheenRoughness:.46,side:THREE.DoubleSide,map:cuticleMask(),alphaTest:.18,alphaToCoverage:true});
  const coreMat=baseMat.clone();coreMat.alphaMap=null;coreMat.map=null;coreMat.alphaTest=0;coreMat.side=THREE.FrontSide;coreMat.normalScale.set(.13,.04);
  const cardMat=new THREE.MeshPhysicalMaterial({map:maps.map,normalMap:maps.normal,normalScale:new THREE.Vector2(.17,.07),roughnessMap:maps.rough,roughness:.66,anisotropy:.92,anisotropyRotation:PI/2,specularIntensity:.65,sheen:.13,sheenColor:new THREE.Color('#69565d'),sheenRoughness:.4,side:THREE.DoubleSide,alphaTest:.20,alphaToCoverage:true});
- const fineMat=new THREE.MeshPhysicalMaterial({color:'#ffffff',vertexColors:true,roughness:.30,anisotropy:.97,anisotropyRotation:PI/2,specularIntensity:.85,side:THREE.DoubleSide});
- applyHairShading(coreMat,{strength:.31});applyHairShading(cardMat,{strength:.33});applyHairShading(fineMat,{strength:.35});
+ const fineMat=new THREE.MeshPhysicalMaterial({color:'#ffffff',vertexColors:true,roughness:.43,anisotropy:.92,anisotropyRotation:PI/2,specularIntensity:.58,side:THREE.DoubleSide});
+ applyHairShading(coreMat,{strength:.26});applyHairShading(cardMat,{strength:.27});applyHairShading(fineMat,{strength:.26});
  function clumpGuide(base,field,id){
   const points=[],phase=hash(id,713)*TAU,end=.958+.042*hash(id,617);
   for(let i=0;i<=150;i++){
@@ -90,7 +92,7 @@ export function buildGroom({parent,skinMaterial,mobile=false,faceZ}){
  for(const side of[-1,1]){
   const b=builder(),uv1=[],nu=mobile?96:120,nt=mobile?154:184;
   for(let j=0;j<=nt;j++)for(let i=0;i<=nu;i++){
-   const u=i/nu,t=j/nt,curve=guide(side,u),p=curve.getPoint(t),out=normalField(side,u)(t,p);p.addScaledVector(out,-.013);
+   const u=i/nu,t=j/nt,curve=guide(side,u),p=curve.getPoint(t),out=normalField(side,u)(t,p);p.addScaledVector(out,-.006);
    b.p.push(p.x,p.y,p.z);b.uv.push(u*8,t);uv1.push(u,t);const c=new THREE.Color('#281e20').multiplyScalar(.90+.065*Math.sin(u*57)+.045*Math.sin(u*147+t*5));b.color.push(c.r,c.g,c.b);
    if(j<nt&&i<nu){const k=j*(nu+1)+i;if(side>0)b.idx.push(k,k+1,k+nu+1,k+1,k+nu+2,k+nu+1);else b.idx.push(k,k+nu+1,k+1,k+1,k+nu+1,k+nu+2);}
   }
@@ -110,7 +112,7 @@ export function buildGroom({parent,skinMaterial,mobile=false,faceZ}){
   for(let j=0;j<=segments;j++){const t=j/segments,p=curve.getPoint(t),T=curve.getTangent(t).normalize(),N=field(t,p),S=T.clone().cross(N).normalize(),O=S.clone().cross(T).normalize();frames.push({t,p,T,S,O});}
   for(let k=0;k<count;k++){
    const a=hash(id*199+k,3),phase=hash(id*197+k,21)*TAU,offset=(a-.5)*spread*2,base=fine.p.length/3,width=flyaway?.00034+.00020*hash(id,k):.00043+.00027*hash(id,k);
-   const color=new THREE.Color(flyaway?'#605047':'#49382f').multiplyScalar(.59+.73*hash(k,id));
+   const color=new THREE.Color(flyaway?'#493e39':'#352b29').multiplyScalar(.59+.73*hash(k,id));
    for(const f of frames){
     const taper=Math.pow(Math.max(.0001,1-smooth(f.t,.91,1)),.75),curl=(.0028*Math.sin(f.t*16+phase)+.0014*Math.sin(f.t*39+phase*3))*Math.sin(PI*f.t),lift=flyaway?.018+.035*Math.sin(PI*f.t)**2:.014+.010*hash(id,k+18);
     const p=f.p.clone().addScaledVector(f.S,offset*(.7+.3*Math.sin(PI*f.t))*smooth(f.t,0,.042)+curl).addScaledVector(f.O,mix(.002,lift,smooth(f.t,0,.045)));
@@ -142,7 +144,7 @@ export function buildGroom({parent,skinMaterial,mobile=false,faceZ}){
  // A fine scalp-colored part is visible below the growing roots, not a hard central seam.
  if(skinMaterial){
   const points=[];for(let i=0;i<=80;i++){const p=partPoint(.06+.87*i/80,1);p.x-=.0035;p.addScaledVector(scalpNormal(p),-.012);points.push(p);}
-  const m=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points),100,.0018,5,false),new THREE.MeshStandardMaterial({color:'#73574d',roughness:.85}));m.name='Subtle visible scalp part';m.castShadow=false;parent.add(m);
+  const m=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points),100,.0008,5,false),new THREE.MeshStandardMaterial({color:'#49342f',roughness:.85}));m.name='Subtle visible scalp part';m.castShadow=false;parent.add(m);
  }
  const bangPaths=[
  [[.087,3.13],[-.025,3.015],[-.205,2.815],[-.370,2.53],[-.490,2.22]],
@@ -155,7 +157,7 @@ export function buildGroom({parent,skinMaterial,mobile=false,faceZ}){
  [[.168,3.15],[.176,2.960],[.13,2.800],[.091,2.664],[.055,2.598]],
  [[.130,3.15],[.021,2.990],[-.121,2.809],[-.244,2.593],[-.349,2.394]]];
  for(let i=0;i<bangPaths.length;i++){
-  const points=bangPaths[i].map(([x,y])=>V(x,y,faceZ(x,y)+.025+.058*smooth(y,2.93,3.18))),curve=new THREE.CatmullRomCurve3(points,false,'centripetal'),field=(t,p)=>V(p.x*.28,.03,1).normalize(),width=[.022,.015,.014,.011,.008,.008,.014,.006,.007][i];
+  const points=bangPaths[i].map(([x,y],j)=>{if(j===0)y+=.115;const skin=faceZ(x,y)+.029,cap=RZ*Math.sqrt(Math.max(0,1-(x/RX)**2-((y-CY)/RY)**2))+.028;return V(x,y,mix(skin,Math.max(skin,cap),smooth(y,2.91,3.16)));}),curve=new THREE.CatmullRomCurve3(points,false,'centripetal'),field=(t,p)=>V(p.x*.28,.03,1).normalize(),width=[.022,.015,.014,.011,.008,.008,.014,.006,.007][i];
   ribbon(cards,curve,width,.001,field,null,{segments:84,across:4,offset:.003,tip:.85,endStart:.05});cardCount++;
   addFine(curve,field,mobile?30:48,width*.82,59001+i);
  }

@@ -63,7 +63,7 @@ export function buildContinuousFace({parent,material,faceZ,headWidth,backDepth,c
   z-=.016*cavity;
   const lip=lipShape(x,y);
   if(lip&&lip.v<1.45){const {v,f,upper}=lip;
-   const shape=v<1?(.017*(1-v*v*(3-2*v))+(upper?.020:.029)*Math.sin(PI*v)**2):0;
+   const shape=v<1?(.011*(1-v*v*(3-2*v))+(upper?.012:.023)*Math.sin(PI*v)**2):0;
    z+=shape*Math.pow(f,.7);
    z-=.0018*G(y-lip.s,.0018)*Math.pow(f,.7);
   }
@@ -85,8 +85,8 @@ export function buildContinuousFace({parent,material,faceZ,headWidth,backDepth,c
   c.lerp(new THREE.Color('#805046'),.43*Math.pow(cavity,.8));
   const lip=lipShape(x,y);
   if(lip&&lip.v<1.4){
-   const f=(1-THREE.MathUtils.smoothstep(lip.v,.79,1.21))*THREE.MathUtils.smoothstep(lip.f,0,.15);
-   c.lerp(new THREE.Color(lip.upper?'#c58280':'#db918f'),f*.82);
+   const f=(1-THREE.MathUtils.smoothstep(lip.v,.63,1.38))*THREE.MathUtils.smoothstep(lip.f,0,.15);
+   c.lerp(new THREE.Color(lip.upper?'#c58280':'#db918f'),f*.70);
    c.lerp(new THREE.Color('#773e40'),.74*(.45+.55*lip.t*lip.t)*G(y-lip.s,.0023)*Math.pow(lip.f,.5));
    const grain=.002*Math.sin(x*310+Math.sin(y*79))*f;
    c.r+=grain;c.g+=grain*.4;c.b+=grain*.3;

@@ -52,7 +52,7 @@ export function buildPortrait({mobile=false}={}){
  const browBase=new THREE.MeshStandardMaterial({color:'#957064',roughness:.9});
  const lashMat=new THREE.MeshStandardMaterial({color:'#39241f',roughness:.63});
  // Anatomically placed, original skin maps distinguish matte skin from hydrated lip relief.
- const atlas=buildSkinAtlas(headWidth);skin.map=atlas.color;skin.normalMap=atlas.normal;skin.normalScale.set(.45,.45);skin.roughnessMap=atlas.roughness;skin.roughness=1;skin.aoMap=atlas.occlusion;skin.aoMapIntensity=.5;skin.sheen=.045;skin.specularIntensity=.46;
+ const atlas=buildSkinAtlas(headWidth);skin.map=atlas.color;skin.normalMap=atlas.normal;skin.normalScale.set(.56,.56);skin.roughnessMap=atlas.roughness;skin.roughness=1;skin.aoMap=atlas.occlusion;skin.aoMapIntensity=.5;skin.sheen=.045;skin.specularIntensity=.64;
  // Seamless face with precise curved eye boundaries and embedded nasal/lip relief.
  const faceSculpt=buildContinuousFace({parent:head,material:skin,faceZ,skinColor,headWidth,backDepth,chinCenter,mobile});
  // Neck and upper sternum taper into the blouse, not a floating head.
