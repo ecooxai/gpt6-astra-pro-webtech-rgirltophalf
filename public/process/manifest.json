@@ -1,9 +1,30 @@
 {
-  "revision": "2026-10-05T06:01:47.250250+00:00",
+  "revision": "2026-10-05T06:16:02.178033+00:00",
   "score": 81,
-  "iterations": 29,
-  "note": "Review 29: 81/100. The nasal shadow is less harsh, the lips are narrower, and the collar wings no longer form a joined bib. Four views pass browser capture. The crown edge and grouped fringe are still artificial; close-up eyes and skin remain stylized. Scores are manual visual judgments, not measured similarity.",
+  "iterations": 32,
+  "note": "Review 32: 81/100. The upper lids cover the irises more naturally and the eye openings are less bulbous. The nasal underside is still too dark, the long hairline fibers form an artificial band, and skin/cloth remain simplified. This is not a 95/100 likeness. Scores are manual visual judgments, not measured similarity.",
   "reviews": [
+    {
+      "title": "32 \u00b7 Anatomical upper-lid coverage and nasal-wing relief",
+      "score": 81,
+      "image": "process/iteration-32-portrait.png",
+      "note": "The upper lids cover the irises more naturally and the eye openings are less bulbous. The nasal underside is still too dark, the long hairline fibers form an artificial band, and skin/cloth remain simplified. This is not a 95/100 likeness.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-32-portrait.png"
+    },
+    {
+      "title": "31 \u00b7 Restored crown coverage and smaller optical reflections",
+      "score": 81,
+      "image": "process/iteration-31-portrait.png",
+      "note": "Four views render without browser errors. The rear hair remains continuous and iris detail is no longer hidden behind large square reflections. Front hair roots, eyelid shape, skin shading and cloth still need more realism; the requested likeness target is not achieved.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-31-portrait.png"
+    },
+    {
+      "title": "30 \u00b7 Feathered fringe exposed overly thin root coverage",
+      "score": 80,
+      "image": "process/iteration-30-portrait.png",
+      "note": "The crown is less tall and the fringe has varied paths, but the root transition becomes too transparent and detached fibers show through. This is a visual regression; the next pass restores coverage while retaining tapered edges.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-30-portrait.png"
+    },
     {
       "title": "29 \u00b7 Softer facial transitions and rolled collar wings",
       "score": 81,

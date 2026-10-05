@@ -6,7 +6,7 @@ import Delaunator from 'delaunator';
 import fit from './portrait-fit.json' with {type:'json'};
 const PI=Math.PI,TAU=2*PI,clamp=THREE.MathUtils.clamp;
 const G=(x,s)=>Math.exp(-((x/s)**2));
-function nasalAperture(x,y){const q=(Math.abs(x)-.072)/.014,center=2.115+fit.noseShift+.002*q;return Math.exp(-q*q-((y-center)/.006)**2);}
+function nasalAperture(x,y){const q=(Math.abs(x)-.075)/.019,center=2.112+fit.noseShift+.003*q;return Math.exp(-q*q-((y-center)/.0075)**2);}
 
 export const eyeY=2.419,eyeX=fit.eyeSpacing,eyeW=.128;
 export const eyeCenterY=side=>eyeY-side*fit.eyeAsymmetry;
@@ -14,7 +14,7 @@ export function eyeEdge(side,t,upper){
  const x=side*eyeX+eyeW*t,y=eyeCenterY(side)+side*t*.009+(upper?.065:-.054)*Math.pow(Math.max(0,1-t*t),.72);
  return new THREE.Vector3(x,y,eyeSurface(side,x,y));
 }
-export function eyeSurface(side,x,y){return .204+Math.sqrt(Math.max(.00001,.216**2-(x-side*eyeX)**2-(y-eyeCenterY(side))**2));}
+export function eyeSurface(side,x,y){return .195+Math.sqrt(Math.max(.00001,.216**2-(x-side*eyeX)**2-(y-eyeCenterY(side))**2));}
 function inEye(x,y,margin=0){
  for(const s of[-1,1]){const t=(x-s*eyeX)/eyeW;if(Math.abs(t)>1)continue;
  const lo=eyeEdge(s,t,false).y,hi=eyeEdge(s,t,true).y;
@@ -60,7 +60,7 @@ export function buildContinuousFace({parent,material,faceZ,headWidth,backDepth,c
   }
   // Recessed nasal apertures remain part of the same mesh.
   const cavity=nasalAperture(x,y);
-  z-=.005*cavity;
+  z-=.008*cavity;
   const lip=lipShape(x,y);
   if(lip&&lip.v<1.45){const {v,f,upper}=lip;
    const shape=v<1?(.011*(1-v*v*(3-2*v))+(upper?.006:.011)*Math.sin(PI*v)**2):0;
@@ -72,17 +72,17 @@ export function buildContinuousFace({parent,material,faceZ,headWidth,backDepth,c
  const colorAt=(x,y)=>{
   const c=skinColor(x,y,1);
   const browT=(Math.abs(x)-.10)/.303;
-  if(browT>-.035&&browT<1.07){const t=clamp(browT,0,1),by=2.557+.025*Math.sin(PI*t*.94)-.022*t,shape=THREE.MathUtils.smoothstep(browT,-.035,.035)*(1-THREE.MathUtils.smoothstep(browT,.94,1.07));c.lerp(new THREE.Color('#866257'),.29*G(y-by,.0105*(1-.38*t))*shape);}
+  if(browT>-.035&&browT<1.07){const t=clamp(browT,0,1),by=2.557+.025*Math.sin(PI*t*.94)-.022*t,shape=THREE.MathUtils.smoothstep(browT,-.035,.035)*(1-THREE.MathUtils.smoothstep(browT,.94,1.07));c.lerp(new THREE.Color('#836055'),.42*G(y-by,.0140*(1-.38*t))*shape);}
 
   // Soft tonal transitions: no pasted-on orbital or lip patches.
   for(const s of[-1,1]){
    const t=(x-s*eyeX)/eyeW;
    if(Math.abs(t)<1.15){const e=eyeEdge(s,clamp(t,-.998,.998),true),f=G(y-e.y-.020,.023)*Math.pow(Math.max(0,1-t*t),.55);
-    c.lerp(new THREE.Color('#bc8d80'),.12*f);
-    c.lerp(new THREE.Color('#ae7a71'),.11*G(y-e.y-.035,.008)*Math.max(0,1-t*t));}
+    c.lerp(new THREE.Color('#b98177'),.20*f);
+    c.lerp(new THREE.Color('#a67265'),.16*G(y-e.y-.026,.008)*Math.max(0,1-t*t));}
   }
   const cavity=nasalAperture(x,y);
-  c.lerp(new THREE.Color('#8d5d54'),.34*Math.pow(cavity,.8));
+  c.lerp(new THREE.Color('#794d45'),.49*Math.pow(cavity,.8));
   const lip=lipShape(x,y);
   if(lip&&lip.v<1.4){
    const f=(1-THREE.MathUtils.smoothstep(lip.v,.63,1.38))*THREE.MathUtils.smoothstep(lip.f,0,.15);

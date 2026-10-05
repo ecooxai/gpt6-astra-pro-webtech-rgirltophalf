@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {MeshoptDecoder} from 'three/addons/libs/meshopt_decoder.module.js';
 import {applyHairShading} from './hair-shading.js';
+import {applyCorneaShading} from './cornea-shading.js';
 import {weave} from './garment.js';
 import version from './runtime-version.json' with {type:'json'};
 export async function loadPortrait({mobile=false,cached=false,onProgress=()=>{}}={}){
@@ -24,7 +25,7 @@ export async function loadPortrait({mobile=false,cached=false,onProgress=()=>{}}
     const material=o.material;
     if(!configured.has(material)){
      configured.add(material);
-     if(material.userData.exportTransmission){material.color.set(0);material.transmission=0;material.transparent=true;material.blending=THREE.AdditiveBlending;material.depthWrite=false;material.opacity=1;material.envMapIntensity=2.6;}
+     if(material.userData.exportTransmission){material.color.set(0);material.transmission=0;material.transparent=true;material.blending=THREE.AdditiveBlending;material.depthWrite=false;material.opacity=1;material.envMapIntensity=.82;material.roughness=.13;applyCorneaShading(material);}
      if(meta.normalScale&&material.normalScale)material.normalScale.fromArray(meta.normalScale);
      if(meta.envMapIntensity!==undefined&&!material.userData.exportTransmission)material.envMapIntensity=meta.envMapIntensity;
      material.alphaToCoverage=Boolean(meta.alphaToCoverage);
