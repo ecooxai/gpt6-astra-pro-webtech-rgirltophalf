@@ -3,7 +3,8 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js';
 import { exportPortrait, validateExport } from './export-portrait.js';
-import { buildPortrait } from './model.js';
+import { loadPortrait } from './load-portrait.js';
+import { withStructureInspector } from './structure-inspector.js';
 import { createStudioEnvironment } from './studio.js';
 const $=s=>document.querySelector(s);
 const params=new URLSearchParams(location.search);
@@ -12,14 +13,14 @@ const host=$('#canvas-host'),mobile=innerWidth<761;
 const toast=text=>{const e=$('#toast');e.textContent=text;e.style.opacity='1';setTimeout(()=>e.style.opacity='0',4500);};
 function download(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),60000);}
 let renderer,scene,camera,controls,portrait;
-let needsFrames=1,activeView='portrait',clay=false;
+let needsFrames=1,activeView='portrait',clay=false,renderingEnabled=true;
 const invalidate=()=>{needsFrames=Math.max(needsFrames,1);};
 const presets={portrait:{pos:[0,2.42,7.6],target:[0,1.53,0]},front:{pos:[0,1.55,7.6],target:[0,1.53,0]},left:{pos:[-4.9,2.35,5.8],target:[0,1.53,0]},right:{pos:[4.9,2.35,5.8],target:[0,1.53,0]},back:{pos:[0,1.7,-7.6],target:[0,1.53,0]},detail:{pos:[0,2.63,3.55],target:[.015,2.62,.03]}};
 function setView(name){const p=presets[name]||presets.portrait;activeView=name;camera.position.set(...p.pos);controls.target.set(...p.target);controls.update();document.querySelectorAll('[data-view]').forEach(el=>{el.classList.toggle('active',el.dataset.view===name);el.setAttribute('aria-pressed',String(el.dataset.view===name));});invalidate();}
 async function init(){
  try{
   renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true,powerPreference:'high-performance'});
-  renderer.setPixelRatio(params.has('capture')?1.5:Math.min(Math.max(1.25,devicePixelRatio),mobile?1.5:1.75));renderer.setClearColor(0x000000,0);
+  renderer.setPixelRatio(params.has('capture')?1.5:Math.min(devicePixelRatio||1,1.5));renderer.setClearColor(0x000000,0);
   renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1;
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.shadowMap.autoUpdate=false;renderer.shadowMap.needsUpdate=true;
   host.appendChild(renderer.domElement);renderer.domElement.setAttribute('aria-label','Interactive original 3D upper-body portrait. Drag to rotate.');
@@ -34,7 +35,7 @@ async function init(){
   area('#e3e9ff',1.0,3.5,3.1,2.5,3,4);
   area('#f0d5c3',2.7,1.5,4.2,-2.2,2.2,3.5);
   const key=new THREE.DirectionalLight('#fff4ed',.40);key.position.set(-3,4.9,4.7);key.castShadow=true;key.shadow.mapSize.set(mobile?1024:2048,mobile?1024:2048);Object.assign(key.shadow.camera,{left:-3,right:3,top:4,bottom:-2,near:.5,far:15});key.shadow.bias=-.00012;key.shadow.normalBias=.015;key.shadow.radius=6;key.target.position.set(0,2,0);scene.add(key,key.target);
-  portrait=buildPortrait({mobile});scene.add(portrait.root);
+  portrait=withStructureInspector(await loadPortrait({mobile,cached:params.has('cached')&&!params.has('procedural'),onProgress:message=>{$('#loading p').textContent=message;}}));scene.add(portrait.root);
   new ResizeObserver(()=>{const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;renderer.setSize(w,h);camera.aspect=w/h;camera.updateProjectionMatrix();invalidate();}).observe(host);
   setView(params.get('view')||'portrait');
   $('#loading').style.display='none';$('#render-status').textContent='ORIGINAL GEOMETRY / LIVE';
@@ -50,8 +51,8 @@ async function init(){
   async function exportGLB(){const button=$('#export-glb');button.disabled=true;$('#export-status').textContent='Packaging original geometry and portable PBR materials…';try{const out=await exportPortrait(portrait);download(new Blob([out],{type:'model/gltf-binary'}),'gpt6-astra-pro_chatgpt_webtech_rgirltophalf.glb');$('#export-status').textContent='GLB exported with embedded original geometry and maps. Corneas use portable transmission; hair uses its standard PBR fallback.';return out.byteLength;}catch(e){$('#export-status').textContent='Export failed: '+e.message;throw e;}finally{button.disabled=false;}}
   $('#export-glb').onclick=()=>exportGLB().catch(e=>toast(e.message));
   renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();toast('WebGL paused. Reload the page to restore the graphics context.');});
-  function animate(){requestAnimationFrame(animate);controls.update();if(controls.autoRotate||needsFrames>0){renderer.render(scene,camera);needsFrames--;}}animate();
-  window.__portrait={ready:true,renderer,scene,camera,controls,model:portrait,setView,setClay,exportGLB,validateExport,render:()=>renderer.render(scene,camera),stats:()=>({triangles:renderer.info.render.triangles,drawCalls:renderer.info.render.calls,geometries:renderer.info.memory.geometries,textures:renderer.info.memory.textures,...portrait.stats})};
+  function animate(){requestAnimationFrame(animate);if(!renderingEnabled||document.hidden)return;controls.update();if(controls.autoRotate||needsFrames>0){renderer.render(scene,camera);needsFrames--;}}if(!params.has('bake'))animate();
+  window.__portrait={ready:true,renderer,scene,camera,controls,model:portrait,setView,setClay,exportGLB,validateExport,setRendering:on=>{renderingEnabled=on;invalidate();},render:()=>renderer.render(scene,camera),stats:()=>({triangles:renderer.info.render.triangles,drawCalls:renderer.info.render.calls,geometries:renderer.info.memory.geometries,textures:renderer.info.memory.textures,...portrait.stats})};
   await refreshJournal();
  }catch(err){console.error(err);$('#loading').innerHTML='<p>Unable to start the 3D studio.</p><small></small>';$('#loading small').textContent=err.message;$('#render-status').textContent='GRAPHICS ERROR';window.__portrait={ready:false,error:err.message};}
 }

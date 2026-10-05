@@ -1,0 +1,13 @@
+from pathlib import Path
+p=Path('src/face-surface.js');s=p.read_text()
+s=s.replace('upper?.055:-.049','upper?.065:-.054').replace('h=upper?.055:-.049','h=upper?.065:-.054')
+s=s.replace('Math.abs(dx)>.275||Math.abs(dy)>.225','Math.abs(dx)>.34||Math.abs(dy)>.27').replace('dist<.155&&Math.abs(dx)<.27&&Math.abs(dy)<.22','dist<.18&&Math.abs(dx)<.34&&Math.abs(dy)<.27')
+s=s.replace('smoothstep(dist,0,upper?.14:.19)','smoothstep(dist,0,.17)');p.write_text(s)
+p=Path('src/garment.js');s=p.read_text().replace('C=V(s*.406,.987,.410),D=V(placketX(1.035)+s*.038,1.035,.373)','C=V(s*.425,1.010,.406),D=V(placketX(.890)+s*.045,.890,.415)').replace('z+=.0085*G(distance,.025)*envelope-.0045*G(distance+.030,.027)*envelope','z+=.0028*G(distance,.032)*envelope-.0015*G(distance+.033,.034)*envelope').replace('z+=.013*G(fold,.028)','z+=.006*G(fold,.035)').replace('z-=.006*G(fold+.045,.032)','z-=.0025*G(fold+.045,.042)');p.write_text(s)
+p=Path('src/skin-atlas.js');s=p.read_text().replace('ao=new Uint8Array(n*n*4);','ao=new Uint8Array(n*n*4),hydration=new Uint8Array(n*n*4);')
+s=s.replace('.47-.08*tzone+.032*grain','.49-.22*tzone+.032*grain').replace('.255+.030*Math.sin(x*1030)', '.235+.027*Math.sin(x*1030)')
+s=s.replace('const rgh=THREE.MathUtils.lerp', 'const water=Math.min(.38,.018+.34*tzone+.26*lip);hydration[k]=hydration[k+1]=hydration[k+2]=Math.round(255*water);hydration[k+3]=255;\n  const rgh=THREE.MathUtils.lerp')
+s=s.replace('return{normal:makeTexture(normal,n)', 'return{clearcoat:makeTexture(hydration,n),normal:makeTexture(normal,n)');p.write_text(s)
+p=Path('src/model.js');s=p.read_text().replace('skin.specularIntensity=.64;', 'skin.specularIntensity=.78;skin.clearcoat=1;skin.clearcoatMap=atlas.clearcoat;skin.clearcoatRoughness=.25;');p.write_text(s)
+p=Path('src/groom-flow.js');s=p.read_text().replace('applyHairShading(coreMat,{strength:.26});applyHairShading(cardMat,{strength:.27});applyHairShading(fineMat,{strength:.26});','applyHairShading(baseMat,{strength:.28});applyHairShading(coreMat,{strength:.37});applyHairShading(cardMat,{strength:.37});applyHairShading(fineMat,{strength:.40});').replace('scalpMat.roughness=.78;', 'scalpMat.roughness=.72;applyHairShading(scalpMat,{strength:.28});');p.write_text(s)
+print('PASS28 anatomical continuity, eye opening, skin hydration and cloth edits saved')

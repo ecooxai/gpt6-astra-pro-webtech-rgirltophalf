@@ -1,38 +1,31 @@
-# Continuation context
+# GPT-6 Astra Pro / Web portrait continuation
 
-## Goal and honesty
+## Quality and provenance
+Latest completed review: pass 26, 81/100. Check public/process/manifest.json for newer status. The requested 20,000 reviewed modeling iterations and >95/100 are NOT achieved. Scores are subjective; parameter candidates, compression jobs and test frames are not modeling reviews. No stock visual assets, generated images or reference pixels are used as textures. Passes 24-26 fixed crown/rear gaps and fringe roots. Skin, eyes, hair and tailoring remain stylized.
 
-Build a real 3D upper-body portrait matching the user reference, from scratch with web technology. The user requests 20,000 edit/test iterations and a visual score above 95/100. Those targets have NOT been reached. Count only actual reviewed iterations; never relabel frames, parameter samples, or repeated checks as visual modeling iterations. Scores are subjective self-assessments, not measured similarity.
+## Environment
+Project: /home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf
+Runtime: mcp_colabdev highram, software ANGLE/SwiftShader.
+Dedicated terminal: 1630. Quota: 32 terminals. Do not stop unrelated terminals or browsers. Short webterm read --filter shells have a five-second and 4096-byte limit; cd explicitly to this project.
+Dev port: 48763
+Tunnel: https://curves-latino-glossary-peers.trycloudflare.com
+Pages: https://ecooxai.github.io/gpt6-astra-pro-webtech-rgirltophalf/
+Repo: https://github.com/ecooxai/gpt6-astra-pro-webtech-rgirltophalf
+Source branch: gpt6-astra-pro_chatgpt_webtech-portrait-polish
+Pages branch: gpt6-astra-pro_webtech_pages
+Verified deployed pass-26 commit: 542b951621f6011b47d66ca4666383764c67cca4
 
-Latest authoritative status: `public/process/manifest.json`. Eight visual passes have been rendered so far; the latest assessment is 68/100. The model remains stylized, not photorealistic. Front, side, rear, and detail PNGs are in `public/process/`.
-
-## Environment and isolation
-
-Project: `/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf`
-Runtime: mcp_colabdev, user `/home/dev`; Node 22, headless Chromium, Cloudflared, GitHub CLI.
-Branch: `gpt6-astra-pro_chatgpt_webgl-portrait`.
-Dev port: 48763. Never reuse port 4317; it belongs to another project.
-Temporary tunnel: https://courier-while-rapidly-chargers.trycloudflare.com
-
-The runtime has a 32-terminal quota. Terminal 1579 was created for this project, but its live PTY later changed to another active project. DO NOT write to or stop that shared live PTY. Prefer a new dedicated terminal when available. A project-scoped `webterm read ... --filter` shell has worked for isolated commands; always explicitly change to the absolute project directory. Quote shell arguments correctly, including literal Markdown backticks. Long jobs can be launched with Python subprocess.Popen(start_new_session=True), with redirected logs, then actively monitored. Do not stop unrelated terminals or browser processes.
-
-## Reference and provenance
-
-Reference for visual inspection only: `reference/rgirtophalf.png` (git-ignored).
-User URL: https://lesswebdisk.my-team-8435.chatgpt.site/raw/u-oKDfM5n2PVKJ/3d/rgirrltophalf/rgirtophalf.png
-Use vision, not OCR or pixel analysis. Never use the reference as a render texture. No imported visual assets or image-generation tools have been used. All geometry and maps are procedural JavaScript.
+## Active work
+Pass-26 acceptance tests are running in terminal 1630; dense wireframe is slow in software. Desktop layout, heading, six cameras, clay, wire, hair and turntable checks passed. Mobile/exports are NOT yet confirmed.
+Queued: refine27.py and five-view capture; compression library installation; prepare-cache.py, bake-original.mjs, compress-original.mjs; load-portrait.js creation. Inspect logs/files before resubmitting. Do not edit imported source during captures.
+Cache loader is NOT enabled. Remaining setup: export weave from garment.js; create runtime-version.json from compression report; update compress-original.mjs to write that version. Setup commands were blocked and did not execute.
 
 ## Architecture and tests
+model.js batches original anatomy, eyes, hair and blouse. face-surface.js/facial-definition.js sculpt anatomy. eyes.js creates bounded eyes and lashes. groom-flow.js builds scalp-to-tip hair. garment.js builds sewn cloth/buttons. Maps are mathematical. main.js/index.html/style.css implement the responsive studio and latest-first journal.
+export-portrait.js clones original materials and substitutes portable transmissive corneas. Custom live hair reflection uses standard PBR fallback in GLB. Cache geometry is authored here, never a stock asset.
+Run scripts/capture.mjs NN portrait detail left right back with Node; geometry-test.mjs validates attributes/indices; test-studio.mjs checks UI and real exports. Python log_review.py records a reviewed pass. bake-original.mjs and compress-original.mjs build the own-model cache. deploy-pages.sh publishes Pages.
+Reports: public/process/test-NN.json and acceptance-latest.json. Logs: .logs/. Reference: reference/rgirtophalf.png, git-ignored. View it with get_image, not pixel analysis. Old validate.mjs/review.mjs overwrite historical screenshots; replace npm test.
 
-`src/model.js`: continuous sculpted head, eye openings, spherical eye surfaces, lips, ears, neck, layered volumetric and fine-strand hair, folded blouse and buttons. Seed 220901. Geometry is batched by material for about 27 draw calls. A viewport under 761 px selects reduced hair density.
-`src/main.js`: studio lighting, orbit camera, render-on-demand loop, static shadow caching, controls, PNG/GLB export, auto-refresh journal.
-`src/style.css` and `index.html`: responsive studio, model and tool names above the live character.
-`node scripts/capture.mjs NN portrait left right back detail`: clean 720x1080 Chrome renders. This viewport selects the mobile model. Inspect images with get_image before recording a score.
-`python3 scripts/log_review.py NN SCORE TITLE NOTE`: records the actual visual review.
-`npm run build`: writes project-relative `build/`.
-
-## Next priorities
-
-Fix small upper-eyelid boundary gaps in close-up. Improve realistic skin response, scalp/root flow, fine fringe density, and cloth tension folds. Test desktop and phone layout, orbit presets, clay, wireframe, hair visibility, PNG and GLB export. Export and verify the GLB, preserve a source archive, update the journal artifact links and absolute paths, and refresh this file. Rebuild and redeploy after changes. Do not claim completion merely because the UI or browser tests pass.
-
-GitHub CLI account was verified as `ecooxai`. Permanent deployment is being prepared; verify the actual remote and Pages status before claiming deployment. No credentials belong in source, logs committed to git, or archives.
+## Next delivery steps
+Review pass 27 before scoring. Refine eye openings and face shading. Verify PNG/GLB download and reload. Visually compare cache before enabling; restore hair shader, corneas, normal scales, weave and shadow flags. Hide dense fibers in topology mode.
+Publish current previews, verified model, source archive and reports with absolute paths. Use a dedicated /build subfolder; never clean shared /build. Exclude credentials, logs, dependencies, Git internals, reference and recursive archives. Update handoff, commit/push, deploy, verify public manifest/assets and back up Colab.

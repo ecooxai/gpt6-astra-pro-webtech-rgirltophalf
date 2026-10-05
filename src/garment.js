@@ -7,7 +7,7 @@ function sample(rows,y,k){let i=0;while(i<rows.length-2&&y>rows[i+1][0])i++;cons
 function geo(p,idx,uv){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();return g;}
 function add(parent,geometry,material,name){const o=new THREE.Mesh(geometry,material);o.name=name;o.castShadow=o.receiveShadow=true;parent.add(o);return o;}
 function tube(parent,points,r,mat,name){return add(parent,new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points),Math.max(8,points.length*2),r,5,false),mat,name);}
-function weave(){const n=256,d=new Uint8Array(n*n*4);for(let y=0;y<n;y++)for(let x=0;x<n;x++){
+export function weave(){const n=256,d=new Uint8Array(n*n*4);for(let y=0;y<n;y++)for(let x=0;x<n;x++){
  const u=x%8,v=y%8,over=((x>>3)+(y>>3))%2===0,a=Math.pow(Math.max(0,Math.sin(PI*(u+.5)/8)),.6),b=Math.pow(Math.max(0,Math.sin(PI*(v+.5)/8)),.6),value=.35+.25*(over?a:b)+.06*(over?b:a),i=(y*n+x)*4;d[i]=d[i+1]=d[i+2]=Math.round(value*255);d[i+3]=255;
  }const t=new THREE.DataTexture(d,n,n);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(22,22);t.generateMipmaps=true;t.minFilter=THREE.LinearMipmapLinearFilter;t.needsUpdate=true;return t;}
 const rows=[[-.55,.79,.369],[-.25,.79,.384],[0,.79,.405],[.34,.805,.423],[.68,.835,.404],[.88,.87,.360],[1.045,.883,.306],[1.17,.73,.258],[1.30,.49,.221],[1.45,.267,.205]];
@@ -18,11 +18,22 @@ function front(x,y){const w=sample(rows,y,1),d=sample(rows,y,2),u=clamp(x/w,-.99
  z+=.009*Math.sin(y*21+Math.abs(dx)*13)*G(Math.abs(dx)-.12,.15)*G(y-.2,.8);
  z+=.010*Math.sin(x*18+y*5)*G(Math.abs(x)-.53,.20)*G(y-.15,.65);
  for(const s of[-1,1])z-=.013*G(x-s*(.65-.12*(.65-y)),.021)*G(y-.38,.48);
+ // Gentle tension radiates from each sewn button, with broad relaxed cloth between them.
+ for(const buttonY of [.695,.229,-.257]){
+  const ax=Math.abs(dx),distance=y-buttonY+.105*ax+.095*ax*ax;
+  const envelope=G(ax-.135,.20)*(1-G(ax,.035));
+  z+=.0028*G(distance,.032)*envelope-.0015*G(distance+.033,.034)*envelope;
+ }
+ for(const side of[-1,1]){
+  const anchor=side*.66,fold=y-.83+side*(x-anchor)*.47;
+  z+=.006*G(fold,.035)*G(x-anchor,.23)*G(y-.66,.26);
+  z-=.0025*G(fold+.045,.042)*G(x-anchor,.25)*G(y-.66,.29);
+ }
  return z;
 }
 export function buildBlouse(parent,{mobile=false}={}){
  const group=new THREE.Group();group.name='Tailored original white blouse';group.scale.x=1.18;parent.add(group);
- const cloth=new THREE.MeshPhysicalMaterial({color:'#eef0f6',roughness:.75,sheen:.55,sheenRoughness:.84,sheenColor:new THREE.Color('#fff8f4'),bumpMap:weave(),bumpScale:.0008,side:THREE.DoubleSide});
+ const cloth=new THREE.MeshPhysicalMaterial({color:'#f2f2fa',roughness:.80,sheen:.48,sheenRoughness:.84,sheenColor:new THREE.Color('#fff8f4'),bumpMap:weave(),bumpScale:.0008,side:THREE.DoubleSide});
  const edgeMat=new THREE.MeshStandardMaterial({color:'#e6e7ed',roughness:.84});
  const thread=new THREE.MeshStandardMaterial({color:'#dddde4',roughness:.9});
  const button=new THREE.MeshPhysicalMaterial({color:'#f0ebdf',roughness:.34,specularIntensity:.4});
@@ -73,9 +84,9 @@ export function buildBlouse(parent,{mobile=false}={}){
   add(group,geo(p,idx,uv),cloth,'Soft collar stand');
  }
  function collar(s,u,v,depth=0){
-  const A=V(s*.233,1.465,.220),B=V(s*.455,1.215,.282),C=V(s*.445,1.004,.397),D=V(placketX(.875)+s*.045,.875,.419);
+  const A=V(s*.226,1.442,.222),B=V(s*.448,1.236,.290),C=V(s*.391,.977,.407),D=V(placketX(1.156)+s*.105,1.156,.363);
   const p=A.lerp(B,u).lerp(D.lerp(C,u),v);
-  p.z+=.047*Math.sin(PI*u)*Math.sin(PI*v)+.034*Math.sin(PI*v)*(1-u)+depth;
+  p.z+=.036*Math.sin(PI*u)*Math.sin(PI*v)+.060*Math.sin(PI*v)*(1-u)+depth;
   return p;
  }
  for(const s of[-1,1]){

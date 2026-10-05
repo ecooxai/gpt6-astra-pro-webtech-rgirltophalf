@@ -76,7 +76,7 @@ export function buildGroom({parent,skinMaterial,mobile=false,faceZ}){
  const coreMat=baseMat.clone();coreMat.alphaMap=null;coreMat.map=null;coreMat.alphaTest=0;coreMat.side=THREE.FrontSide;coreMat.normalScale.set(.13,.04);
  const cardMat=new THREE.MeshPhysicalMaterial({map:maps.map,normalMap:maps.normal,normalScale:new THREE.Vector2(.17,.07),roughnessMap:maps.rough,roughness:.66,anisotropy:.92,anisotropyRotation:PI/2,specularIntensity:.65,sheen:.13,sheenColor:new THREE.Color('#69565d'),sheenRoughness:.4,side:THREE.DoubleSide,alphaTest:.20,alphaToCoverage:true});
  const fineMat=new THREE.MeshPhysicalMaterial({color:'#ffffff',vertexColors:true,roughness:.43,anisotropy:.92,anisotropyRotation:PI/2,specularIntensity:.58,side:THREE.DoubleSide});
- applyHairShading(coreMat,{strength:.26});applyHairShading(cardMat,{strength:.27});applyHairShading(fineMat,{strength:.26});
+ applyHairShading(baseMat,{strength:.28});applyHairShading(coreMat,{strength:.37});applyHairShading(cardMat,{strength:.37});applyHairShading(fineMat,{strength:.40});
  function clumpGuide(base,field,id){
   const points=[],phase=hash(id,713)*TAU,end=.89+.11*hash(id,617);
   for(let i=0;i<=150;i++){
@@ -108,7 +108,7 @@ export function buildGroom({parent,skinMaterial,mobile=false,faceZ}){
    const c=new THREE.Color('#292022').multiplyScalar(.94+.035*Math.sin(u*117));b.color.push(c.r,c.g,c.b);
    if(j<nt&&i<nu){const k=j*(nu+1)+i;if(side>0)b.idx.push(k,k+1,k+nu+1,k+1,k+nu+2,k+nu+1);else b.idx.push(k,k+nu+1,k+1,k+1,k+nu+1,k+nu+2);}
   }
-  const scalpMat=coreMat.clone();scalpMat.side=THREE.DoubleSide;scalpMat.roughness=.78;
+  const scalpMat=coreMat.clone();scalpMat.side=THREE.DoubleSide;scalpMat.roughness=.72;applyHairShading(scalpMat,{strength:.28});
   finish(b,scalpMat,parent,'Continuous root-coordinate crown support '+side,false);
  }
  // Close the narrow central rear seam; the forehead side intentionally remains open.

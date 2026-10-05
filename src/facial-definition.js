@@ -16,20 +16,20 @@ export function createFaceDefinition({noseShift=0,mouthShift=0,eyeSpacing=.243,e
   const w=Math.max(.008,headWidth(y)),d=frontDepth(y),u=clamp(x/w,-.9999,.9999),ny=y-noseShift,my=y-mouthShift,ey=y+eyeAsymmetry*Math.tanh(x/.10);
   let z=d*Math.pow(Math.sqrt(Math.max(0,1-u*u)),.85)+chinCenter(y);
   z+=.036*g(Math.abs(x)-.37,.14)*g(y-2.25,.18);
-  z-=.037*g(Math.abs(x)-(eyeSpacing-.010),.155)*g(ey-2.419,.093);
-  z+=.021*g(Math.abs(x)-.22,.17)*g(y-2.55,.065);
+  z-=.022*g(Math.abs(x)-(eyeSpacing-.010),.174)*g(ey-2.419,.110);
+  z+=.013*g(Math.abs(x)-.22,.18)*g(y-2.55,.083);
   // Nasal ridge, tip, alae and columella have separate, smooth anatomical supports.
-  z+=.060*g(x,.064)*g(ny-2.365,.224)*THREE.MathUtils.smoothstep(ny,2.100,2.163);
-  z+=.116*g(x,.094)*g(ny-2.174,.081)*THREE.MathUtils.smoothstep(ny,2.056,2.139);
-  z+=.023*g(x,.030)*g(ny-2.111,.027);
-  z+=.049*g(Math.abs(x)-.084,.041)*g(ny-2.142,.054)*THREE.MathUtils.smoothstep(ny,2.067,2.132);
-  z-=.006*g(Math.abs(x)-.126,.013)*g(ny-2.143,.038);
+  z+=.056*g(x,.079)*g(ny-2.345,.209);
+  z+=.102*g(x,.087)*g(ny-2.166,.084);
+  z+=.012*g(x,.031)*g(ny-2.108,.033);
+  z+=.028*g(Math.abs(x)-.081,.048)*g(ny-2.143,.051);
+  z-=.0035*g(Math.abs(x)-.119,.021)*g(ny-2.139,.036);
   const py=y-(noseShift+mouthShift)*.5;
   z-=.003*g(x,.023)*g(py-2.035,.054);z+=.003*g(Math.abs(x)-.028,.016)*g(py-2.035,.050);
   z+=.009*g(x,.20)*g(my-1.950,.10);
   z-=.003*g(x,.11)*g(my-1.86,.041);z+=.004*g(x,.19)*g(y-1.83,.065);
   z+=.015*g(Math.abs(x)-.26,.15)*g(ey-2.325,.07);
-  z-=.018*g(Math.abs(x)-.12,.05)*g(ey-2.419,.10);
+  z-=.009*g(Math.abs(x)-.12,.070)*g(ey-2.419,.105);
   return z;
  }
  return{faceRows,chinCenter,headWidth,frontDepth,backDepth,faceZ};

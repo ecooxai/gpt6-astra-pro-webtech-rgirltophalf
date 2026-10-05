@@ -34,7 +34,7 @@ function lipTintTexture(upper){const w=256,h=96,d=new Uint8Array(w*h*4);for(let 
 function irisTexture(){const size=256,data=new Uint8Array(size*size*4);for(let y=0;y<size;y++)for(let x=0;x<size;x++){const dx=(x-size/2)/(size/2),dy=(y-size/2)/(size/2),r=Math.hypot(dx,dy),a=Math.atan2(dy,dx);const fibers=Math.sin(a*153+Math.sin(r*20)*2.5)*.12+Math.sin(a*279-r*48)*.09+Math.sin(a*67+r*39)*.1;const edge=1-.66*Math.pow(clamp((r-.70)/.29,0,1),2);const ring=1+.17*Math.sin(r*34+a*7);const f=edge*ring*(1+fibers)*(1-.24*g(r-.44,.12));const i=(y*size+x)*4;data[i]=clamp(68*f,0,255);data[i+1]=clamp(40*f,0,255);data[i+2]=clamp(28*f,0,255);data[i+3]=255;}const t=new THREE.DataTexture(data,size,size);t.colorSpace=THREE.SRGBColorSpace;t.needsUpdate=true;return t;}
 const {headWidth,frontDepth,backDepth,chinCenter,faceZ}=createFaceDefinition(fit);
 export {faceZ};
-function skinColor(x,y,front){const base=new THREE.Color('#efc6b6');let blush=(g(Math.abs(x)-.39,.16)*g(y-2.25,.16)*.44+g(x,.115)*g(y-2.14-fit.noseShift,.09)*.16)*front;base.lerp(new THREE.Color('#d98684'),blush);const under=g(Math.abs(x)-.23,.16)*g(y-2.355,.035)*front*.12;base.lerp(new THREE.Color('#bc8988'),under);const lids=g(Math.abs(x)-.23,.18)*g(y-2.495,.025)*front*.12;base.lerp(new THREE.Color('#bd8b7a'),lids);const light=g(x+.28,.24)*g(y-2.24,.30)*front*.075;base.lerp(new THREE.Color('#ffe1c7'),light);const grain=(rnd()-.5)*.003;base.r+=grain;base.g+=grain;base.b+=grain;return base;}
+function skinColor(x,y,front){const base=new THREE.Color('#f2ccbc');let blush=(g(Math.abs(x)-.39,.16)*g(y-2.25,.18)*.30+g(x,.115)*g(y-2.14-fit.noseShift,.09)*.16)*front;base.lerp(new THREE.Color('#d98684'),blush);const under=g(Math.abs(x)-.23,.16)*g(y-2.355,.035)*front*.12;base.lerp(new THREE.Color('#bc8988'),under);const lids=g(Math.abs(x)-.23,.18)*g(y-2.495,.025)*front*.12;base.lerp(new THREE.Color('#bd8b7a'),lids);const light=g(x+.28,.24)*g(y-2.24,.30)*front*.075;base.lerp(new THREE.Color('#ffe1c7'),light);const grain=(rnd()-.5)*.003;base.r+=grain;base.g+=grain;base.b+=grain;return base;}
 function shirtCenter(y){return -.065-.139*y+.097*y*y-.05*THREE.MathUtils.smoothstep(y,.70,.88);}
 export function buildPortrait({mobile=false}={}){
  seed=220901;
@@ -52,7 +52,7 @@ export function buildPortrait({mobile=false}={}){
  const browBase=new THREE.MeshStandardMaterial({color:'#957064',roughness:.9});
  const lashMat=new THREE.MeshStandardMaterial({color:'#39241f',roughness:.63});
  // Anatomically placed, original skin maps distinguish matte skin from hydrated lip relief.
- const atlas=buildSkinAtlas(headWidth);skin.map=atlas.color;skin.normalMap=atlas.normal;skin.normalScale.set(.56,.56);skin.roughnessMap=atlas.roughness;skin.roughness=1;skin.aoMap=atlas.occlusion;skin.aoMapIntensity=.5;skin.sheen=.045;skin.specularIntensity=.64;
+ const atlas=buildSkinAtlas(headWidth);skin.map=atlas.color;skin.normalMap=atlas.normal;skin.normalScale.set(.41,.41);skin.roughnessMap=atlas.roughness;skin.roughness=1;skin.aoMap=atlas.occlusion;skin.aoMapIntensity=.25;skin.sheen=.14;skin.specularIntensity=.50;skin.clearcoat=1;skin.clearcoatMap=atlas.clearcoat;skin.clearcoatRoughness=.25;
  // Seamless face with precise curved eye boundaries and embedded nasal/lip relief.
  const faceSculpt=buildContinuousFace({parent:head,material:skin,faceZ,skinColor,headWidth,backDepth,chinCenter,mobile});
  // Neck and upper sternum taper into the blouse, not a floating head.

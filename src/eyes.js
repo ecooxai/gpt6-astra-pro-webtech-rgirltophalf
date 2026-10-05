@@ -13,9 +13,9 @@ function geometry(p,idx,uv,c){const g=new THREE.BufferGeometry();g.setAttribute(
 function add(parent,g,m,name){const mesh=new THREE.Mesh(g,m);mesh.name=name;mesh.castShadow=false;mesh.receiveShadow=true;parent.add(mesh);return mesh;}
 function orientFront(p,idx){for(let i=0;i<idx.length;i+=3){const a=idx[i]*3,b=idx[i+1]*3,c=idx[i+2]*3;if((p[b]-p[a])*(p[c+1]-p[a+1])-(p[b+1]-p[a+1])*(p[c]-p[a])<0){const k=idx[i+1];idx[i+1]=idx[i+2];idx[i+2]=k;}}}
 export function buildEyes(parent,{skinMaterial,faceSculpt}){
- const white=new THREE.MeshPhysicalMaterial({color:'#e2d6ce',map:scleraPigment(),vertexColors:true,roughness:.37,specularIntensity:.34});white.name='Living sclera';
+ const white=new THREE.MeshPhysicalMaterial({color:'#eee1db',map:scleraPigment(),vertexColors:true,roughness:.37,specularIntensity:.34});white.name='Living sclera';
  const iris=new THREE.MeshPhysicalMaterial({color:'#ffffff',map:buildIrisTexture(),vertexColors:true,roughness:.43,specularIntensity:.13});iris.name='Original brown iris pigment';
- const cornea=new THREE.MeshPhysicalMaterial({color:'#000000',transparent:true,blending:THREE.AdditiveBlending,opacity:1,ior:1.376,roughness:.078,specularIntensity:1,envMapIntensity:2.6,depthWrite:false});cornea.name='Optical cornea';cornea.userData.exportTransmission=true;
+ const cornea=new THREE.MeshPhysicalMaterial({color:'#000000',transparent:true,blending:THREE.AdditiveBlending,opacity:1,ior:1.376,roughness:.105,specularIntensity:1,envMapIntensity:1.25,depthWrite:false});cornea.name='Optical cornea';cornea.userData.exportTransmission=true;
  const rim=skinMaterial.clone();rim.name='Anatomical eyelid margin';rim.color.set('#ffffff');rim.vertexColors=true;rim.map=null;rim.normalMap=null;rim.roughnessMap=null;rim.bumpMap=null;rim.aoMap=null;rim.roughness=.65;rim.specularIntensity=.14;rim.clearcoat=0;rim.sheen=0;
  const lash=new THREE.MeshPhysicalMaterial({color:'#211813',roughness:.92,specularIntensity:0});lash.name='Tapered eyelash fiber';
  const tear=new THREE.MeshPhysicalMaterial({color:'#c38c86',roughness:.32,specularIntensity:.36});tear.name='Lacrimal tissue';
@@ -56,8 +56,8 @@ export function buildEyes(parent,{skinMaterial,faceSculpt}){
   for(const upper of[true,false]){
    const rp=[],ruv=[],rc=[],ri=[],ns=144,nv=6;
    for(let i=0;i<=ns;i++)for(let j=0;j<=nv;j++){
-    const t=-.99999+1.99998*i/ns,v=j/nv,outer=eyeEdge(side,t,upper),inner=innerEdge(side,t,upper),x=outer.x,y=THREE.MathUtils.lerp(outer.y,inner.y,v),z=THREE.MathUtils.lerp(faceSculpt.zAt(x,outer.y)+.0001,inner.z,v)+.0036*Math.sin(PI*v)*Math.sqrt(1-t*t);
-    rp.push(x,y,z);ruv.push(i/ns,v);const color=faceSculpt.colorAt(x,outer.y);color.lerp(new THREE.Color(upper?'#be8d80':'#d4a09a'),v*.48);rc.push(color.r,color.g,color.b);
+    const t=-.99999+1.99998*i/ns,v=j/nv,outer=eyeEdge(side,t,upper),inner=innerEdge(side,t,upper),x=outer.x,y=THREE.MathUtils.lerp(outer.y,inner.y,v),z=THREE.MathUtils.lerp(faceSculpt.zAt(x,outer.y)+.0001,inner.z,v)+.0018*Math.sin(PI*v)*Math.sqrt(1-t*t);
+    rp.push(x,y,z);ruv.push(i/ns,v);const color=faceSculpt.colorAt(x,outer.y);color.lerp(new THREE.Color(upper?'#be8d80':'#d4a09a'),v*.30);rc.push(color.r,color.g,color.b);
     if(i<ns&&j<nv){const k=i*(nv+1)+j;ri.push(k,k+nv+1,k+1,k+1,k+nv+1,k+nv+2);}
    }
    orientFront(rp,ri);add(parent,geometry(rp,ri,ruv,rc),rim,'Rounded dimensional eyelid '+side+' '+upper);

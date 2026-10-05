@@ -1,9 +1,30 @@
 {
-  "revision": "2026-10-04T20:29:51.681747+00:00",
+  "revision": "2026-10-05T06:01:47.250250+00:00",
   "score": 81,
-  "iterations": 26,
-  "note": "Review 26: 81/100. The detached fringe roots are hidden and individual fibers now end at varied lengths. Eye sockets are shallower, though lower eyelid transitions remain too raised. Side view is coherent; skin, tailoring and hair flow are still stylized rather than reference-level realism. Scores are manual visual judgments, not measured similarity.",
+  "iterations": 29,
+  "note": "Review 29: 81/100. The nasal shadow is less harsh, the lips are narrower, and the collar wings no longer form a joined bib. Four views pass browser capture. The crown edge and grouped fringe are still artificial; close-up eyes and skin remain stylized. Scores are manual visual judgments, not measured similarity.",
   "reviews": [
+    {
+      "title": "29 \u00b7 Softer facial transitions and rolled collar wings",
+      "score": 81,
+      "image": "process/iteration-29-portrait.png",
+      "note": "The nasal shadow is less harsh, the lips are narrower, and the collar wings no longer form a joined bib. Four views pass browser capture. The crown edge and grouped fringe are still artificial; close-up eyes and skin remain stylized.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-29-portrait.png"
+    },
+    {
+      "title": "28 \u00b7 Recovered softer folds; anatomy still stylized",
+      "score": 80,
+      "image": "process/iteration-28-portrait.png",
+      "note": "The severe button-fold bands are reduced. Front and detail still show a hard crown edge, exaggerated nasal shadows, raised orbital margins, and a flat bib-like collar. These need further modeling.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-28-portrait.png"
+    },
+    {
+      "title": "27 \u00b7 Review caught orbital marks and over-strong cloth folds",
+      "score": 79,
+      "image": "process/iteration-27-portrait.png",
+      "note": "Portrait and detail reveal small orbital shading discontinuities and artificial button-fold bands. The raised collar ends also look less natural. This is a regression and is not the published release. Correct before deployment.",
+      "path": "/home/dev/project/3d/gpt6_astra_pro_webtech_rgirltophalf/public/process/iteration-27-portrait.png"
+    },
     {
       "title": "26 \u00b7 Hidden fringe roots and embedded optical eyes",
       "score": 81,

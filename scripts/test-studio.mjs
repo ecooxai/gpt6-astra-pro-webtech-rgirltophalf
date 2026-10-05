@@ -18,6 +18,7 @@ try{
  report.stats.desktop=await page.evaluate(()=>window.__portrait.stats());
  await page.screenshot({path:'public/latest/gpt6-astra-pro_chatgpt_webtech_desktop.png',timeout:240000});
  check('desktop WebGL render',report.stats.desktop.drawCalls>0&&report.stats.desktop.triangles>100000,report.stats.desktop);
+ await page.evaluate(()=>{window.__portrait.setRendering(false);window.__portrait.controls.enableDamping=false;});report.stateChecksUsePausedRendering=true;
  for(const view of ['front','left','right','back','detail','portrait']){
   await page.locator(`[data-view="${view}"]`).click();
   const active=await page.locator(`[data-view="${view}"]`).getAttribute('aria-pressed');check('camera preset '+view,active==='true',active);
@@ -27,10 +28,10 @@ try{
  await page.locator('#wire').uncheck();await page.locator('#studio').click();
  await page.locator('#hair').uncheck();check('hair toggle off',await page.evaluate(()=>!window.__portrait.model.hairGroup.visible));await page.locator('#hair').check();
  await page.locator('#rotate').check();check('turntable on',await page.evaluate(()=>window.__portrait.controls.autoRotate));await page.locator('#rotate').uncheck();
- await page.locator('#exposure').fill('1.15');check('exposure control',await page.evaluate(()=>Math.abs(window.__portrait.renderer.toneMappingExposure-1.15)<.001));await page.locator('#exposure').fill('1.00');
+ await page.locator('#exposure').fill('1.15');check('exposure control',await page.evaluate(()=>Math.abs(window.__portrait.renderer.toneMappingExposure-1.15)<.001));await page.locator('#exposure').fill('1');
  check('journal is newest first',await page.evaluate(()=>document.querySelector('.review-heading span')?.textContent.startsWith(String(document.querySelector('#iterations').textContent))));
  const links=await page.locator('#artifacts a').count();check('artifact links visible',links>=5,links);
- await desktop.close();
+ await page.evaluate(()=>window.__portrait.setRendering(true));await desktop.close();
  const mobile=await browser.newContext({viewport:{width:390,height:1000},deviceScaleFactor:1,isMobile:true,hasTouch:true,reducedMotion:'reduce',acceptDownloads:true});
  const phone=await mobile.newPage();phone.setDefaultTimeout(240000);errors(phone);report.timings.mobileReadyMs=await ready(phone);
  check('mobile layout has no horizontal overflow',await phone.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));

@@ -6,15 +6,15 @@ import Delaunator from 'delaunator';
 import fit from './portrait-fit.json' with {type:'json'};
 const PI=Math.PI,TAU=2*PI,clamp=THREE.MathUtils.clamp;
 const G=(x,s)=>Math.exp(-((x/s)**2));
-function nasalAperture(x,y){const q=(Math.abs(x)-.080)/.020,center=2.117+fit.noseShift+.006*q;return Math.exp(-q*q-((y-center)/.009)**2);}
+function nasalAperture(x,y){const q=(Math.abs(x)-.072)/.014,center=2.115+fit.noseShift+.002*q;return Math.exp(-q*q-((y-center)/.006)**2);}
 
 export const eyeY=2.419,eyeX=fit.eyeSpacing,eyeW=.128;
 export const eyeCenterY=side=>eyeY-side*fit.eyeAsymmetry;
 export function eyeEdge(side,t,upper){
- const x=side*eyeX+eyeW*t,y=eyeCenterY(side)+side*t*.009+(upper?.055:-.049)*Math.pow(Math.max(0,1-t*t),.72);
+ const x=side*eyeX+eyeW*t,y=eyeCenterY(side)+side*t*.009+(upper?.065:-.054)*Math.pow(Math.max(0,1-t*t),.72);
  return new THREE.Vector3(x,y,eyeSurface(side,x,y));
 }
-export function eyeSurface(side,x,y){return .204+Math.sqrt(Math.max(.00001,.225**2-(x-side*eyeX)**2-(y-eyeCenterY(side))**2));}
+export function eyeSurface(side,x,y){return .204+Math.sqrt(Math.max(.00001,.216**2-(x-side*eyeX)**2-(y-eyeCenterY(side))**2));}
 function inEye(x,y,margin=0){
  for(const s of[-1,1]){const t=(x-s*eyeX)/eyeW;if(Math.abs(t)>1)continue;
  const lo=eyeEdge(s,t,false).y,hi=eyeEdge(s,t,true).y;
@@ -22,7 +22,7 @@ function inEye(x,y,margin=0){
  return false;
 }
 function nearestEdge(side,x,y){
- const dx=x-side*eyeX,dy=y-eyeCenterY(side)-side*dx/eyeW*.009,upper=dy>=0,h=upper?.055:-.049;
+ const dx=x-side*eyeX,dy=y-eyeCenterY(side)-side*dx/eyeW*.009,upper=dy>=0,h=upper?.065:-.054;
  const distance=theta=>{const t=Math.cos(theta),ex=side*eyeX+eyeW*t,ey=eyeCenterY(side)+side*.009*t+h*Math.pow(Math.sin(theta),1.44);return(ex-x)*(ex-x)+(ey-y)*(ey-y);};
  let best=0,min=Infinity;const steps=12;
  for(let i=0;i<=steps;i++){const d=distance(PI*i/steps);if(d<min){min=d;best=i;}}
@@ -33,9 +33,9 @@ function nearestEdge(side,x,y){
 }
 export const seamY=t=>1.949+fit.mouthShift-.007*(1-t*t)+.003*Math.cos(t*PI);
 function lipShape(x,y){
- const t=x/.172;if(Math.abs(t)>=1.04)return null;
+ const t=x/.159;if(Math.abs(t)>=1.04)return null;
  const f=Math.max(0,1-t*t),s=seamY(t),upper=y>=s;
- const h=(upper?(.049+.013*G(Math.abs(t)-.29,.18)-.003*G(t,.10)):.075)*Math.pow(f,.70);
+ const h=(upper?(.038+.010*G(Math.abs(t)-.29,.18)-.004*G(t,.10)):.059)*Math.pow(f,.70);
  if(h<.0001)return null;
  return {t,upper,v:Math.abs(y-s)/h,f,h,s};
 }
@@ -45,27 +45,27 @@ export function buildContinuousFace({parent,material,faceZ,headWidth,backDepth,c
   // An orbital transition with compact support, continuous with the surrounding face.
   for(const s of[-1,1]){
    const dx=x-s*eyeX,dy=y-eyeCenterY(s)-s*dx/eyeW*.009;
-   if(Math.abs(dx)>.275||Math.abs(dy)>.225)continue;
+   if(Math.abs(dx)>.34||Math.abs(dy)>.27)continue;
    const {edge,vertical,upper}=nearestEdge(s,x,y);
    const dist=Math.hypot((x-edge.x),y-edge.y);
-   if(dist<.155&&Math.abs(dx)<.27&&Math.abs(dy)<.22){
+   if(dist<.18&&Math.abs(dx)<.34&&Math.abs(dy)<.27){
     const delta=edge.z-faceZ(edge.x,edge.y);
-    const fade=1-THREE.MathUtils.smoothstep(dist,0,.14);
+    const fade=1-THREE.MathUtils.smoothstep(dist,0,.17);
     z+=delta*fade*fade;
 
-    z+=.0032*G(dist-.012,.012)*vertical;
-    if(upper)z-=.0044*G(dist-.030,.009)*vertical;
-    else z+=.0047*G(dist-.025,.014)*vertical;
+    z+=.0017*G(dist-.012,.016)*vertical;
+    if(upper)z-=.0025*G(dist-.030,.011)*vertical;
+    else z+=.0008*G(dist-.025,.024)*vertical;
    }
   }
   // Recessed nasal apertures remain part of the same mesh.
   const cavity=nasalAperture(x,y);
-  z-=.016*cavity;
+  z-=.005*cavity;
   const lip=lipShape(x,y);
   if(lip&&lip.v<1.45){const {v,f,upper}=lip;
-   const shape=v<1?(.011*(1-v*v*(3-2*v))+(upper?.012:.023)*Math.sin(PI*v)**2):0;
+   const shape=v<1?(.011*(1-v*v*(3-2*v))+(upper?.006:.011)*Math.sin(PI*v)**2):0;
    z+=shape*Math.pow(f,.7);
-   z-=.0018*G(y-lip.s,.0018)*Math.pow(f,.7);
+   z-=.003*G(y-lip.s,.003)*Math.pow(f,.7);
   }
   return z;
  };
@@ -82,12 +82,12 @@ export function buildContinuousFace({parent,material,faceZ,headWidth,backDepth,c
     c.lerp(new THREE.Color('#ae7a71'),.11*G(y-e.y-.035,.008)*Math.max(0,1-t*t));}
   }
   const cavity=nasalAperture(x,y);
-  c.lerp(new THREE.Color('#805046'),.32*Math.pow(cavity,.8));
+  c.lerp(new THREE.Color('#8d5d54'),.34*Math.pow(cavity,.8));
   const lip=lipShape(x,y);
   if(lip&&lip.v<1.4){
    const f=(1-THREE.MathUtils.smoothstep(lip.v,.63,1.38))*THREE.MathUtils.smoothstep(lip.f,0,.15);
-   c.lerp(new THREE.Color(lip.upper?'#c58280':'#db918f'),f*.70);
-   c.lerp(new THREE.Color('#8b5050'),.61*(.45+.55*lip.t*lip.t)*G(y-lip.s,.0023)*Math.pow(lip.f,.5));
+   c.lerp(new THREE.Color(lip.upper?'#ba7474':'#d18383'),f*.78);
+   c.lerp(new THREE.Color('#8b5050'),.57*(.55+.45*lip.t*lip.t)*G(y-lip.s,.0017)*Math.pow(lip.f,.5));
    const grain=.002*Math.sin(x*310+Math.sin(y*79))*f;
    c.r+=grain;c.g+=grain*.4;c.b+=grain*.3;
   }
@@ -111,8 +111,8 @@ export function buildContinuousFace({parent,material,faceZ,headWidth,backDepth,c
   }
  }
  for(let i=0;i<=180;i++){
-  const t=-.999+1.998*i/180,x=t*.172,sy=seamY(t),f=1-t*t;
-  const hu=(.049+.013*G(Math.abs(t)-.29,.18)-.003*G(t,.10))*Math.pow(f,.70),hl=.075*Math.pow(f,.70);
+  const t=-.999+1.998*i/180,x=t*.159,sy=seamY(t),f=1-t*t;
+  const hu=(.038+.010*G(Math.abs(t)-.29,.18)-.004*G(t,.10))*Math.pow(f,.70),hl=.059*Math.pow(f,.70);
   for(let j=-18;j<=18;j++)add(x,sy+(j>=0?hu:hl)*j/18);
  }
  const tri=Delaunator.from(pts).triangles,p=[],uv=[],c=[],idx=[],norm=[];

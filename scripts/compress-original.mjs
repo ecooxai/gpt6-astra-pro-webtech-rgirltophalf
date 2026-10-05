@@ -1,0 +1,21 @@
+/** Compress our own baked geometry; retain all meshes, anatomy, strands and material images. */
+import {NodeIO} from '@gltf-transform/core';
+import {ALL_EXTENSIONS,EXTMeshoptCompression} from '@gltf-transform/extensions';
+import {dedup,reorder,quantize} from '@gltf-transform/functions';
+import {MeshoptEncoder,MeshoptDecoder} from 'meshoptimizer';
+import fs from 'node:fs/promises';
+import crypto from 'node:crypto';
+import {gzipSync} from 'node:zlib';
+const source='public/latest/gpt6-astra-pro_chatgpt_webtech_rgirltophalf.glb';
+const output='public/latest/gpt6-astra-pro_chatgpt_webtech_original-runtime.glb';
+await MeshoptEncoder.ready;await MeshoptDecoder.ready;
+const io=new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({'meshopt.encoder':MeshoptEncoder,'meshopt.decoder':MeshoptDecoder});
+const document=await io.read(source),beforeMeshes=document.getRoot().listMeshes().length;
+await document.transform(dedup(),reorder({encoder:MeshoptEncoder}),quantize({quantizePosition:16,quantizeNormal:14,quantizeTexcoord:16,quantizeColor:12,quantizeGeneric:16}));
+document.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({method:EXTMeshoptCompression.EncoderMethod.QUANTIZE});
+await io.write(output,document);
+const raw=await fs.readFile(source),packed=await fs.readFile(output),readback=await io.read(output);
+if(readback.getRoot().listMeshes().length!==beforeMeshes)throw Error('Compression changed the original mesh count');
+const report={time:new Date().toISOString(),source,output,sourceBytes:raw.length,compressedBytes:packed.length,reductionPercent:Math.round((1-packed.length/raw.length)*1000)/10,meshesPreserved:beforeMeshes,sourceSha256:crypto.createHash('sha256').update(raw).digest('hex'),compressedSha256:crypto.createHash('sha256').update(packed).digest('hex'),positionQuantizationBits:16,externalVisualAssets:false,note:'Geometry is the original source-authored model, not a downloaded asset. Compression is not a visual modeling iteration.'};
+const transfer=gzipSync(packed,{level:6});await fs.writeFile(output+'.gz',transfer);report.gzipBytes=transfer.length;
+await fs.writeFile('public/process/compression-latest.json',JSON.stringify(report,null,2));await fs.writeFile('src/runtime-version.json',JSON.stringify({sha256:report.compressedSha256}));console.log(JSON.stringify(report));
